@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite не поддерживает enum — храним как String (CHILD | PARENT, GOOD | MEDIUM | DIFFICULT)
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         String    // CHILD | PARENT
+  points       Int       @default(0)
+  age          Int?
+  avatarUrl    String?
+  referralCode String?   @unique
+  referredById String?
+  referredBy   User?     @relation("Referrals", fields: [referredById], references: [id])
+  referrals    User[]    @relation("Referrals")
+  createdAt    DateTime  @default(now())
+
+  childrenAsParent ChildParent[] @relation("Parent")
+  parents          ChildParent[] @relation("Child")
+
+  userCourses   UserCourse[]
+  topicFeedback TopicFeedback[]  @relation("ChildFeedback")
+  parentFeedback TopicFeedback[]  @relation("ParentFeedback")
+  activityLogs   ActivityLog[]
+
+  @@map("users")
+}
+
+model ChildParent {
+  id       String @id @default(cuid())
+  parentId String
+  childId  String
+  parent   User   @relation("Parent", fields: [parentId], references: [id], onDelete: Cascade)
+  child    User   @relation("Child", fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, childId])
+  @@map("child_parents")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  titleUz     String?
+  titleRu     String?
+  price       Float
+  orderIndex  Int      @default(0)
+  userCourses UserCourse[]
+
+  @@map("courses")
+}
+
+model UserCourse {
+  id         String  @id @default(cuid())
+  userId     String
+  courseId   String
+  purchased  Boolean @default(false)
+  progress   Int     @default(0)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("user_courses")
+}
+
+model Subject {
+  id    String  @id @default(cuid())
+  name  String
+  order Int     @default(0)
+  topics Topic[]
+
+  @@map("subjects")
+}
+
+model Topic {
+  id        String   @id @default(cuid())
+  subjectId String
+  name      String
+  order     Int      @default(0)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  feedback  TopicFeedback[]
+
+  @@map("topics")
+}
+
+model TopicFeedback {
+  id               String            @id @default(cuid())
+  childId          String
+  parentId         String
+  topicId          String
+  understandingLevel String   // GOOD | MEDIUM | DIFFICULT
+  child            User              @relation("ChildFeedback", fields: [childId], references: [id], onDelete: Cascade)
+  parent           User              @relation("ParentFeedback", fields: [parentId], references: [id], onDelete: Cascade)
+  topic            Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  createdAt        DateTime          @default(now())
+
+  @@map("topic_feedback")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  minutes   Int      @default(0)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date], name: "userId_date")
+  @@map("activity_logs")
+}
