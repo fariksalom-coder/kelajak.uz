@@ -24,7 +24,7 @@ export default function ChildProfilePage() {
   const q = searchParams.get('asChild') ? `?asChild=${searchParams.get('asChild')}` : '';
   const referralPath = pathname.replace(/profile$/, 'referral') + q;
   const contactPath = pathname.replace(/profile$/, 'contact') + q;
-  const prefix = pathname.startsWith('/ru') ? '/ru' : '/uz';
+  const prefix = '/uz';
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [parentGateOpen, setParentGateOpen] = useState(false);
   const [parentGateAnswer, setParentGateAnswer] = useState('');
@@ -86,7 +86,7 @@ export default function ChildProfilePage() {
   };
 
   const handleLogout = () => {
-    signOut({ callbackUrl: pathname.startsWith('/ru') ? '/ru' : '/uz' });
+    signOut({ callbackUrl: '/uz' });
     router.refresh();
   };
 

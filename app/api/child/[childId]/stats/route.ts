@@ -81,7 +81,6 @@ export async function GET(
     courseId: c.id,
     title: c.title,
     titleUz: c.titleUz ?? c.title,
-    titleRu: c.titleRu ?? c.title,
     progress: progressByCourse[c.id] ?? 0,
   }));
 

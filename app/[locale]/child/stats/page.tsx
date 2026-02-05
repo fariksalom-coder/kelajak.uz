@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useChildId } from '@/contexts/ChildIdContext';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 type Stats = {
   points: number;
@@ -11,19 +11,18 @@ type Stats = {
   pointsInLevel: number;
   pointsToNextLevel: number;
   weeklyActivity: Record<string, number>;
-  courseProgress: Array<{ courseId: string; title: string; titleUz?: string; titleRu?: string; progress: number }>;
+  courseProgress: Array<{ courseId: string; title: string; titleUz?: string; progress: number }>;
 };
 
 const DAY_KEYS = ['dayMon', 'dayTue', 'dayWed', 'dayThu', 'dayFri', 'daySat', 'daySun'] as const;
 
 export default function ChildStatsPage() {
   const childId = useChildId();
-  const locale = useLocale();
   const t = useTranslations('child');
   const [stats, setStats] = useState<Stats | null>(null);
 
-  const courseTitle = (cp: { title: string; titleUz?: string; titleRu?: string }) =>
-    locale === 'ru' ? (cp.titleRu ?? cp.title) : (cp.titleUz ?? cp.title);
+  const courseTitle = (cp: { title: string; titleUz?: string }) =>
+    cp.titleUz ?? cp.title;
 
   const levelName = (level: string) => {
     const key = level === 'Beginner' ? 'levelBeginner' : level === 'Intermediate' ? 'levelIntermediate' : 'levelAdvanced';

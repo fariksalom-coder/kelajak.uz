@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 type Course = {
   id: string;
   title: string;
   titleUz?: string | null;
-  titleRu?: string | null;
   price: { toNumber?: () => number } | number;
 };
 
@@ -24,11 +23,9 @@ export default function CoursesList({
   prefix: string;
   locale?: string;
 }) {
-  const locale = useLocale();
   const t = useTranslations('courses');
 
-  const courseTitle = (c: Course) =>
-    locale === 'ru' ? (c.titleRu ?? c.title) : (c.titleUz ?? c.title);
+  const courseTitle = (c: Course) => c.titleUz ?? c.title;
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);

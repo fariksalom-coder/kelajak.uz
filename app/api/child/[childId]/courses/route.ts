@@ -41,7 +41,6 @@ export async function GET(
       id: c.id,
       title: c.title,
       titleUz: c.titleUz ?? c.title,
-      titleRu: c.titleRu ?? c.title,
       price: String(c.price),
       purchased: byCourse[c.id]?.purchased ?? false,
       progress: byCourse[c.id]?.progress ?? 0,

@@ -10,7 +10,6 @@ type CourseItem = {
   id: string;
   title: string;
   titleUz?: string;
-  titleRu?: string;
   price: string;
   purchased: boolean;
   progress: number;
@@ -38,8 +37,7 @@ export default function ChildMainPage() {
   const asChild = searchParams.get('asChild');
   const linkSuffix = asChild ? `?asChild=${asChild}` : '';
 
-  const courseTitle = (c: CourseItem) =>
-    locale === 'ru' ? (c.titleRu ?? c.title) : (c.titleUz ?? c.title);
+  const courseTitle = (c: CourseItem) => c.titleUz ?? c.title;
 
   useEffect(() => {
     fetch(`/api/child/${childId}/courses`)
@@ -52,7 +50,7 @@ export default function ChildMainPage() {
 
   const purchasedCourses = courses.filter((c) => c.purchased);
   const otherCourses = courses.filter((c) => !c.purchased);
-  const progressLabel = locale === 'ru' ? '0 из 0' : '0 dan 0';
+  const progressLabel = '0 dan 0';
 
   const renderCourseGrid = (list: CourseItem[], startColorIndex: number) => (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">

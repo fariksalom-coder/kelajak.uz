@@ -10,7 +10,6 @@ type CourseItem = {
   id: string;
   title: string;
   titleUz?: string;
-  titleRu?: string;
   price: string;
   purchased: boolean;
   progress: number;
@@ -370,9 +369,7 @@ export default function CourseDetailPage() {
   if (loading) return <div className="p-4">Loading...</div>;
 
   const course = courses.find((c) => c.id === courseId);
-  const courseTitle = course
-    ? (locale === 'ru' ? (course.titleRu ?? course.title) : (course.titleUz ?? course.title))
-    : '';
+  const courseTitle = course ? (course.titleUz ?? course.title) : '';
 
   if (!course) {
     return (

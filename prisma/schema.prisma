@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 // SQLite не поддерживает enum — храним как String (CHILD | PARENT, GOOD | MEDIUM | DIFFICULT)
 
 model User {
@@ -51,7 +52,6 @@ model Course {
   id          String   @id @default(cuid())
   title       String
   titleUz     String?
-  titleRu     String?
   price       Float
   orderIndex  Int      @default(0)
   userCourses UserCourse[]

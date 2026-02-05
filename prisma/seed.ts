@@ -4,15 +4,15 @@ const prisma = new PrismaClient();
 
 async function main() {
   const courses = [
-    { title: 'Ingliz tili', titleUz: 'Ingliz tili', titleRu: 'Английский язык' },
-    { title: 'Rus tili', titleUz: 'Rus tili', titleRu: 'Русский язык' },
-    { title: 'Maktabgacha matematika', titleUz: 'Maktabgacha matematika', titleRu: 'Математика для нулевых (дошкольная программа)' },
-    { title: 'Mantiq', titleUz: 'Mantiq', titleRu: 'Логика' },
-    { title: 'Moliyaviy savodxonlik', titleUz: 'Moliyaviy savodxonlik', titleRu: 'Финансовая грамотность' },
-    { title: "Xotirani rivojlantirish", titleUz: "Xotirani rivojlantirish", titleRu: 'Развивать память' },
-    { title: "Qaror qabul qilish ko'nikmasi", titleUz: "Qaror qabul qilish ko'nikmasi", titleRu: 'Умение принять решение' },
-    { title: 'Geografiya', titleUz: 'Geografiya', titleRu: 'География' },
-    { title: 'Mening tanam', titleUz: 'Mening tanam', titleRu: 'Мое тело' },
+    { title: 'Ingliz tili', titleUz: 'Ingliz tili' },
+    { title: 'Rus tili', titleUz: 'Rus tili' },
+    { title: 'Maktabgacha matematika', titleUz: 'Maktabgacha matematika' },
+    { title: 'Mantiq', titleUz: 'Mantiq' },
+    { title: 'Moliyaviy savodxonlik', titleUz: 'Moliyaviy savodxonlik' },
+    { title: "Xotirani rivojlantirish", titleUz: "Xotirani rivojlantirish" },
+    { title: "Qaror qabul qilish ko'nikmasi", titleUz: "Qaror qabul qilish ko'nikmasi" },
+    { title: 'Geografiya', titleUz: 'Geografiya' },
+    { title: 'Mening tanam', titleUz: 'Mening tanam' },
   ];
 
   await prisma.userCourse.deleteMany({});
@@ -21,7 +21,6 @@ async function main() {
     data: courses.map((c, i) => ({
       title: c.title,
       titleUz: c.titleUz,
-      titleRu: c.titleRu,
       price: 0,
       orderIndex: i,
     })),

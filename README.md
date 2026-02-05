@@ -52,6 +52,15 @@ Educational platform: parent/child accounts, courses, statistics, and feedback.
 
 Open [http://localhost:3000](http://localhost:3000). Register as Parent or Child. Parents can add children and buy courses (mock); children see Main / Stats / Profile tabs.
 
+## Deploy to Vercel (PostgreSQL)
+
+В Environment Variables задайте `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `AUTH_TRUST_HOST=true` и **`DATABASE_URL`** (PostgreSQL, не SQLite).  
+Чтобы избежать ошибки **«prepared statement already exists» (42P05)** в serverless, добавьте в конец `DATABASE_URL` параметр **`pgbouncer=true`**, например:
+
+`https://...@...neon.tech/neondb?sslmode=require&pgbouncer=true`
+
+После изменения переменных сделайте Redeploy.
+
 ## Routes
 
 - `/`, `/login`, `/register` — auth
