@@ -11,3 +11,113 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes numberFly {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60px);
+  }
+}
+
+.animate-number-fly {
+  animation: numberFly 0.8s ease-out forwards;
+}
+
+/* Старт и финиш из CSS-переменных (совпадают с «1» в тексте и над кубиком), дуга — много точек */
+@keyframes numberFlyArcToCube {
+  0%   { left: var(--start-left, 72%); top: var(--start-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  2%   { left: 71%; top: 40.5%; transform: translate(-50%, -50%) scale(1.01); }
+  4%   { left: 70%; top: 38.8%; transform: translate(-50%, -50%) scale(1.02); }
+  6%   { left: 69%; top: 36.9%; transform: translate(-50%, -50%) scale(1.03); }
+  8%   { left: 68%; top: 34.8%; transform: translate(-50%, -50%) scale(1.04); }
+  10%  { left: 67%; top: 32.4%; transform: translate(-50%, -50%) scale(1.05); }
+  12%  { left: 65.8%; top: 29.8%; transform: translate(-50%, -50%) scale(1.06); }
+  14%  { left: 64.5%; top: 27%; transform: translate(-50%, -50%) scale(1.07); }
+  16%  { left: 63%; top: 24%; transform: translate(-50%, -50%) scale(1.08); }
+  18%  { left: 61.4%; top: 20.9%; transform: translate(-50%, -50%) scale(1.09); }
+  20%  { left: 59.6%; top: 17.8%; transform: translate(-50%, -50%) scale(1.09); }
+  22%  { left: 57.6%; top: 14.8%; transform: translate(-50%, -50%) scale(1.1); }
+  24%  { left: 55.5%; top: 12%; transform: translate(-50%, -50%) scale(1.1); }
+  26%  { left: 53.2%; top: 9.6%; transform: translate(-50%, -50%) scale(1.11); }
+  28%  { left: 50.8%; top: 7.8%; transform: translate(-50%, -50%) scale(1.11); }
+  30%  { left: 48.4%; top: 6.6%; transform: translate(-50%, -50%) scale(1.12); }
+  32%  { left: 45.9%; top: 6%; transform: translate(-50%, -50%) scale(1.12); }
+  34%  { left: 43.4%; top: 6%; transform: translate(-50%, -50%) scale(1.12); }
+  36%  { left: 40.9%; top: 6.6%; transform: translate(-50%, -50%) scale(1.12); }
+  38%  { left: 38.5%; top: 7.8%; transform: translate(-50%, -50%) scale(1.11); }
+  40%  { left: 36.2%; top: 9.6%; transform: translate(-50%, -50%) scale(1.11); }
+  42%  { left: 34%; top: 12%; transform: translate(-50%, -50%) scale(1.1); }
+  44%  { left: 32%; top: 14.8%; transform: translate(-50%, -50%) scale(1.1); }
+  46%  { left: 30.2%; top: 17.8%; transform: translate(-50%, -50%) scale(1.09); }
+  48%  { left: 28.6%; top: 20.9%; transform: translate(-50%, -50%) scale(1.09); }
+  50%  { left: 27.2%; top: 24%; transform: translate(-50%, -50%) scale(1.08); }
+  52%  { left: 26%; top: 27%; transform: translate(-50%, -50%) scale(1.07); }
+  54%  { left: 25%; top: 29.8%; transform: translate(-50%, -50%) scale(1.06); }
+  56%  { left: 24.2%; top: 32.4%; transform: translate(-50%, -50%) scale(1.05); }
+  58%  { left: 23.5%; top: 34.8%; transform: translate(-50%, -50%) scale(1.04); }
+  60%  { left: 23%; top: 36.9%; transform: translate(-50%, -50%) scale(1.03); }
+  62%  { left: 22.6%; top: 38.8%; transform: translate(-50%, -50%) scale(1.02); }
+  64%  { left: 22.3%; top: 40.5%; transform: translate(-50%, -50%) scale(1.01); }
+  66%  { left: 22.1%; top: 41.2%; transform: translate(-50%, -50%) scale(1.01); }
+  68%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  70%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  72%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  74%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  76%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  78%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  80%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  82%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  84%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  86%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  88%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  90%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  92%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  94%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  96%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  98%  { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+  100% { left: var(--end-left, 22%); top: var(--end-top, 42%); transform: translate(-50%, -50%) scale(1); }
+}
+
+.animate-number-fly-arc {
+  animation: numberFlyArcToCube 1.05s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out both;
+}

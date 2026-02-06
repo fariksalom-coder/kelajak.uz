@@ -57,6 +57,7 @@ export default function ChildLayoutClient({
   const isMain = pathname.endsWith('/child') || pathname.endsWith('/child/');
   const isStats = pathname.includes('/stats');
   const isProfile = pathname.includes('/profile');
+  const isLesson = pathname.includes('/lesson/');
 
   if (role === 'PARENT' && !childId) {
     return <div className="p-4">Loading...</div>;
@@ -65,26 +66,28 @@ export default function ChildLayoutClient({
   return (
     <ChildIdProvider childId={childId}>
       <div className="flex flex-col min-h-[80vh]">
-        <nav className="sticky top-0 z-10 border-b bg-white flex justify-around py-2 shrink-0">
-          <Link
-            href={`${base}${linkSuffix}`}
-            className={`px-4 py-2 ${isMain ? 'text-blue-600 font-medium' : ''}`}
-          >
-            {t('main')}
-          </Link>
-          <Link
-            href={`${base}/stats${linkSuffix}`}
-            className={`px-4 py-2 ${isStats ? 'text-blue-600 font-medium' : ''}`}
-          >
-            {t('stats')}
-          </Link>
-          <Link
-            href={`${base}/profile${linkSuffix}`}
-            className={`px-4 py-2 ${isProfile ? 'text-blue-600 font-medium' : ''}`}
-          >
-            {t('profile')}
-          </Link>
-        </nav>
+        {!isLesson && (
+          <nav className="sticky top-0 z-10 border-b bg-white flex justify-around py-2 shrink-0">
+            <Link
+              href={`${base}${linkSuffix}`}
+              className={`px-4 py-2 ${isMain ? 'text-blue-600 font-medium' : ''}`}
+            >
+              {t('main')}
+            </Link>
+            <Link
+              href={`${base}/stats${linkSuffix}`}
+              className={`px-4 py-2 ${isStats ? 'text-blue-600 font-medium' : ''}`}
+            >
+              {t('stats')}
+            </Link>
+            <Link
+              href={`${base}/profile${linkSuffix}`}
+              className={`px-4 py-2 ${isProfile ? 'text-blue-600 font-medium' : ''}`}
+            >
+              {t('profile')}
+            </Link>
+          </nav>
+        )}
         <div className="flex-1">{children}</div>
       </div>
     </ChildIdProvider>

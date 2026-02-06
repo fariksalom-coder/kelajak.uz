@@ -443,8 +443,12 @@ export default function CourseDetailPage() {
                 </>
               )}
               <div className="flex gap-4 overflow-x-auto pb-4">
-                {section.lessons.map((lesson, i) => (
-                  <div key={i} className="flex-shrink-0 w-[200px]">
+                {section.lessons.map((lesson, i) => {
+                  const isFirstLesson = sectionIdx === 0 && i === 0;
+                  const lessonHref = isFirstLesson
+                    ? `${prefix}/child/courses/${courseId}/lesson/1-2-3-kirish${linkSuffix}`
+                    : undefined;
+                  const card = (
                     <div
                       className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-white ${
                         lesson.status === 'completed'
@@ -452,15 +456,26 @@ export default function CourseDetailPage() {
                           : lesson.status === 'current'
                             ? 'border-purple-500'
                             : 'border-gray-300 opacity-80'
-                      }`}
+                      } ${lessonHref ? 'hover:border-purple-400 cursor-pointer' : ''}`}
                     >
                       <div className="w-16 h-16 rounded-lg bg-gray-200" />
                     </div>
-                    <p className="text-sm text-gray-700 mt-2 text-center leading-tight">
-                      {lesson.label}
-                    </p>
-                  </div>
-                ))}
+                  );
+                  return (
+                    <div key={i} className="flex-shrink-0 w-[200px]">
+                      {lessonHref ? (
+                        <Link href={lessonHref} className="block">
+                          {card}
+                        </Link>
+                      ) : (
+                        card
+                      )}
+                      <p className="text-sm text-gray-700 mt-2 text-center leading-tight">
+                        {lesson.label}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           ))}
