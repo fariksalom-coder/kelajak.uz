@@ -23,6 +23,267 @@ const MATH_TABS = [
 
 type LessonStatus = 'completed' | 'current' | 'locked';
 
+// Rus tili — полная программа; каждый блок заканчивается «Учим словарные слова»
+const RUS_SECTIONS: Array<{
+  sectionTitle: string;
+  subsectionTitle?: string;
+  lessons: Array<{ label: string; status: LessonStatus; lessonSlug?: string }>;
+}> = [
+  {
+    sectionTitle: 'Речь и язык',
+    lessons: [
+      { label: 'Что такое речь?', status: 'current', lessonSlug: 'reading-russian-1' },
+      { label: 'Зачем нужна речь?', status: 'locked' },
+      { label: 'Какой должна быть речь?', status: 'locked' },
+      { label: 'Родной язык', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Виды речи',
+    lessons: [
+      { label: 'Виды речи', status: 'locked' },
+      { label: 'Устная речь', status: 'locked' },
+      { label: 'Письменная речь', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Книжная и разговорная речь. Диалог',
+    lessons: [
+      { label: 'Различаем книжную и разговорную речь', status: 'locked' },
+      { label: 'Составляем диалог. Учимся общаться', status: 'locked' },
+      { label: 'Речевой этикет. Вежливые слова', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Что такое предложение?',
+    lessons: [
+      { label: 'Собираем предложение', status: 'locked' },
+      { label: 'Составляем схему предложения', status: 'locked' },
+      { label: 'Ставим знаки в конце предложения', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Что такое текст?',
+    lessons: [
+      { label: 'Составляем текст', status: 'locked' },
+      { label: 'Текст или не текст?', status: 'locked' },
+      { label: 'Находим границы предложения', status: 'locked' },
+      { label: 'Составляем текст с помощью предложе...', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Части текста',
+    lessons: [
+      { label: 'Выделяем части текста', status: 'locked' },
+      { label: 'Учимся писать с красной строки', status: 'locked' },
+      { label: 'Находим части текста', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Слово и слог',
+    subsectionTitle: 'Слово и его значение',
+    lessons: [
+      { label: 'Сравниваем слово и предмет', status: 'locked' },
+      { label: 'Находим значение слова', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Где живут слова?',
+    lessons: [
+      { label: 'Знакомимся со словарями', status: 'locked' },
+      { label: 'Работаем со словарями (Часть 1)', status: 'locked' },
+      { label: 'Работаем со словарями (Часть 2)', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Какими бывают слова?',
+    lessons: [
+      { label: 'Какими бывают слова?', status: 'locked' },
+      { label: 'Слова-предметы', status: 'locked' },
+      { label: 'Слова-признаки', status: 'locked' },
+      { label: 'Слова-действия', status: 'locked' },
+      { label: 'Закрепление. Какими бывают слова?', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Что такое слог?',
+    lessons: [
+      { label: 'Что такое слог?', status: 'locked' },
+      { label: 'Из чего состоит слог?', status: 'locked' },
+      { label: 'Учимся выделять слоги', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Считаем слоги в словах',
+    lessons: [
+      { label: 'Приём с ладошкой', status: 'locked' },
+      { label: 'Считаем гласные', status: 'locked' },
+      { label: 'Находим слоги', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Перенос слова по слогам',
+    lessons: [
+      { label: 'Как переносить слова', status: 'locked' },
+      { label: 'Как нельзя переносить слова', status: 'locked' },
+      { label: 'Закрепление. Перенос слова по слога...', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Ударение',
+    lessons: [
+      { label: 'Что такое ударение?', status: 'locked' },
+      { label: 'Учимся ставить ударение', status: 'locked' },
+      { label: 'Когда не ставится знак ударения?', status: 'locked' },
+      { label: 'Закрепление. Ударение', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Ударный и безударный слог',
+    lessons: [
+      { label: 'Ударный и безударный слог', status: 'locked' },
+      { label: 'Находим ударные и безударные слоги', status: 'locked' },
+      { label: 'Работаем со слоговой схемой слова', status: 'locked' },
+      { label: 'Как ударение меняет значение слова', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Звуки и буквы',
+    subsectionTitle: 'Звуки и буквы, их обозначающие',
+    lessons: [
+      { label: 'Звуки речи и звуки окружающего мира', status: 'locked' },
+      { label: 'Различаем звуки и буквы', status: 'locked' },
+      { label: 'Как звуки и буквы меняют значение...', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Гласные и согласные звуки',
+    lessons: [
+      { label: 'Как узнать гласный? Как узнать согл...', status: 'locked' },
+      { label: 'Учимся различать гласные и согласны...', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Алфавит или Азбука',
+    lessons: [
+      { label: 'Что такое алфавит?', status: 'locked' },
+      { label: 'Русский алфавит, названия букв', status: 'locked' },
+      { label: 'Где встречаются слова в алфавитном...', status: 'locked' },
+      { label: 'Учим порядок букв в алфавите', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Твёрдые и мягкие согласные звуки',
+    lessons: [
+      { label: 'Знакомимся с твёрдыми и мягкими сог...', status: 'locked' },
+      { label: 'Какие буквы обозначают мягкость сог...', status: 'locked' },
+      { label: 'Какие звуки образуют пары?', status: 'locked' },
+      { label: 'Учимся определять твёрдые и мягкие...', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Буква «Мягкий знак»',
+    lessons: [
+      { label: 'Знакомимся с мягким знаком', status: 'locked' },
+      { label: 'Буква есть, а звука нет', status: 'locked' },
+      { label: 'Перенос слов с мягким знаком', status: 'locked' },
+      { label: 'Буква «Мягкий знак».Тренировка', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Звуки [й\'], [и], буквы Й и И',
+    lessons: [
+      { label: 'Где мы слышим звуки [й\'], [и]?', status: 'locked' },
+      { label: 'Учимся различать буквы И и Й', status: 'locked' },
+      { label: 'Учимся переносить слова с Й', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Буквы е,ё,ю,я. Двойная роль',
+    lessons: [
+      { label: 'Что мы знаем о буквах е,ё,ю,я?', status: 'locked' },
+      { label: 'Что ещё скрывают буквы е,ё,ю,я?', status: 'locked' },
+      { label: 'Учимся определять роль букв е,ё,ю,я', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Звонкие и глухие согласные',
+    lessons: [
+      { label: 'Знакомимся с глухими и звонкими зву...', status: 'locked' },
+      { label: 'Узнаём о парных и непарных согласны...', status: 'locked' },
+      { label: 'Различаем звонкие и глухие согласны...', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Шипящие согласные и ц',
+    lessons: [
+      { label: 'Знакомимся с шипящими звуками', status: 'locked' },
+      { label: 'Знакомимся с цокающим звуком', status: 'locked' },
+      { label: 'Учимся обозначать шипящие и [ц] на...', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Учимся писать грамотно',
+    subsectionTitle: 'Правописание гласных после шипящих: жи-ши, же-ше',
+    lessons: [
+      { label: 'Как слышим, так не пишем', status: 'locked' },
+      { label: 'Узнаём буквосочетания с Ж и Ш на...', status: 'locked' },
+      { label: 'Учимся писать гласные после Ж и Ш', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Правописание гласных после шипящих: ча-ща, чу-щу',
+    lessons: [
+      { label: 'ЧА-ЩА мы пишем только с А', status: 'locked' },
+      { label: 'ЧУ-ЩУ мы пишем только с У', status: 'locked' },
+      { label: 'Пишем гласные после Ч и Щ', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Заглавная буква в словах',
+    lessons: [
+      { label: 'Учимся писать имена', status: 'locked' },
+      { label: 'Учимся писать географические назван...', status: 'locked' },
+      { label: 'Учимся писать заглавную букву', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+  {
+    sectionTitle: 'Правописание чк, чн, чт, нщ',
+    lessons: [
+      { label: 'ЧК, ЧН, ЧТ без лишних знаков', status: 'locked' },
+      { label: 'НЩ, НЧ, ЩН без лишних знаков', status: 'locked' },
+      { label: 'Учимся писать ЧК, ЧН, ЧТ, НЩ', status: 'locked' },
+      { label: 'Учим словарные слова', status: 'locked' },
+    ],
+  },
+];
+
 const MATH_SECTIONS: Array<{
   sectionTitle: string;
   subsectionTitle?: string;
@@ -383,6 +644,7 @@ export default function CourseDetailPage() {
   }
 
   const isMatematika = (course.titleUz ?? course.title).toLowerCase().includes('matematika');
+  const isRusTili = (course.titleUz ?? course.title).toLowerCase().includes('rus tili');
   const prefix = `/${locale}`;
 
   return (
@@ -398,10 +660,70 @@ export default function CourseDetailPage() {
         <h1 className="text-xl font-bold">{courseTitle}</h1>
       </header>
 
-      {!isMatematika && (
+      {!isMatematika && !isRusTili && (
         <div className="py-8 text-gray-500 text-center">
           Kurs mazmuni tez orada qo‘shiladi.
         </div>
+      )}
+
+      {isRusTili && (
+        <>
+          {RUS_SECTIONS.map((section, sectionIdx) => (
+            <section key={sectionIdx} className="mb-8">
+              {sectionIdx === 0 ? (
+                <>
+                  <div className="rounded-xl bg-gray-100 px-4 py-3 mb-2">
+                    <h2 className="font-semibold text-gray-800">{section.sectionTitle}</h2>
+                  </div>
+                  {section.subsectionTitle && (
+                    <h3 className="font-bold text-gray-800 mb-4">{section.subsectionTitle}</h3>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h2 className="font-bold text-gray-800 mb-4">{section.sectionTitle}</h2>
+                  {section.subsectionTitle && (
+                    <h3 className="font-bold text-gray-800 mb-4">{section.subsectionTitle}</h3>
+                  )}
+                </>
+              )}
+              <div className="flex gap-4 overflow-x-auto pb-4">
+                {section.lessons.map((lesson, i) => {
+                  const lessonHref = lesson.lessonSlug
+                    ? `${prefix}/child/courses/${courseId}/lesson/${lesson.lessonSlug}${linkSuffix}`
+                    : undefined;
+                  const card = (
+                    <div
+                      className={`aspect-square rounded-xl border-2 flex items-center justify-center bg-white ${
+                        lesson.status === 'completed'
+                          ? 'border-green-500'
+                          : lesson.status === 'current'
+                            ? 'border-purple-500'
+                            : 'border-gray-300 opacity-80'
+                      } ${lessonHref ? 'hover:border-purple-400 cursor-pointer' : ''}`}
+                    >
+                      <div className="w-16 h-16 rounded-lg bg-gray-200" />
+                    </div>
+                  );
+                  return (
+                    <div key={i} className="flex-shrink-0 w-[200px]">
+                      {lessonHref ? (
+                        <Link href={lessonHref} className="block">
+                          {card}
+                        </Link>
+                      ) : (
+                        card
+                      )}
+                      <p className="text-sm text-gray-700 mt-2 text-center leading-tight">
+                        {lesson.label}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </>
       )}
 
       {isMatematika && (

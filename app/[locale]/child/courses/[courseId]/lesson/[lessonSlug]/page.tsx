@@ -8,6 +8,7 @@ import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
 import SpeakerButton from '@/components/lesson/SpeakerButton';
 import { useChildId } from '@/contexts/ChildIdContext';
+import ReadingRussian1 from './reading_russian_1/reading_russian_1';
 
 const TEXTS = {
   start: 'Boshlash',
@@ -407,6 +408,10 @@ setScreen('explanation');
       }, 1500);
     }
   };
+
+  if (lessonSlug === 'reading-russian-1') {
+    return <ReadingRussian1 />;
+  }
 
   if (lessonSlug !== '1-2-3-kirish') {
     return (
