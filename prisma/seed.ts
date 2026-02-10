@@ -4,6 +4,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const courses = [
+    { title: 'Математика', titleUz: 'Matematika' },
     { title: 'Ingliz tili', titleUz: 'Ingliz tili' },
     { title: 'Rus tili', titleUz: 'Rus tili' },
     { title: 'Maktabgacha matematika', titleUz: 'Maktabgacha matematika' },
