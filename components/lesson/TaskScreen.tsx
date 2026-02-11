@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 
 const HP_PER_STAGE = 10;
 
@@ -17,7 +18,10 @@ export type TaskScreenProps = {
   onComplete?: () => void;
   /** Sayyorani tadqiq qil — xuddi Boshlash kabi fon, orqaga, progress bar, kontent keyinroq */
   /** Tartib bilan sanaymiz — faqat fon va progress bar, etaplar yo'q */
-  lessonVariant?: 'boshlash' | 'sayyorani' | 'raketani-tuzat' | 'tartib-bilan' | 'buyumlarni-next' | 'ali-nechanchi-uy' | 'katak-qogoz' | 'raqam-yozish';
+  lessonVariant?: 'boshlash' | 'sayyorani' | 'raketani-tuzat' | 'tartib-bilan' | 'buyumlarni-next' | 'bolim3-task1' | 'ali-nechanchi-uy' | 'katak-qogoz' | 'raqam-yozish';
+  /** Bo'lim 3 topshiriq 1: etap (0 yoki 1). Parent da saqlansa, qayta mount da yo'qolmaydi */
+  bolim3Task1Stage?: number;
+  onBolim3Task1StageChange?: (stage: number) => void;
 };
 
 const STAGES = [
@@ -111,11 +115,54 @@ function ShapeButton({
   );
 }
 
-export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, lessonSlug, onComplete, lessonVariant = 'boshlash' }: TaskScreenProps) {
+export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, lessonSlug, onComplete, lessonVariant = 'boshlash', bolim3Task1Stage: bolim3StageProp, onBolim3Task1StageChange }: TaskScreenProps) {
   const fonSrc = `${imageBaseUrl}/fon.png`;
   const ramkaSrc = `${imageBaseUrl}/ramka.png`;
   const isTartibBilan = lessonVariant === 'tartib-bilan';
   const isBuyumlarniNext = lessonVariant === 'buyumlarni-next';
+  const isBolim3Task1 = lessonVariant === 'bolim3-task1';
+  const [bolim3StageLocal, setBolim3StageLocal] = useState(0);
+  const bolim3Stage = onBolim3Task1StageChange != null && bolim3StageProp !== undefined ? bolim3StageProp : bolim3StageLocal;
+  const setBolim3Stage = onBolim3Task1StageChange ? (s: number | ((prev: number) => number)) => { const v = typeof s === 'function' ? s(bolim3StageProp ?? 0) : s; onBolim3Task1StageChange(v); } : setBolim3StageLocal;
+  const [bolim3Answer, setBolim3Answer] = useState('');
+  const [bolim3QuizShowNext, setBolim3QuizShowNext] = useState(false);
+  const bolim3AliOrderRef = useRef<Record<number, number[]>>({});
+  useEffect(() => {
+    if (isBolim3Task1 && (bolim3Stage < 2 || bolim3Stage > 9)) {
+      setBolim3QuizShowNext(false);
+      if (bolim3Stage < 6 || bolim3Stage > 9) bolim3AliOrderRef.current = {};
+    }
+  }, [isBolim3Task1, bolim3Stage]);
+  useEffect(() => {
+    if (!isBolim3Task1 || !bolim3QuizShowNext || bolim3Stage < 2 || bolim3Stage > 9) return;
+    const t = setTimeout(() => {
+      setBolim3QuizShowNext(false);
+      if (bolim3Stage === 9) {
+        if (childId && courseId && lessonSlug) {
+          fetch(`/api/child/${childId}/lesson-complete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId, lessonSlug, xp: HP_PER_STAGE * 2 }),
+          }).catch(() => {});
+        }
+        onComplete?.();
+      } else {
+        setBolim3Stage(bolim3Stage + 1);
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [isBolim3Task1, bolim3QuizShowNext, bolim3Stage, childId, courseId, lessonSlug, onComplete, setBolim3Stage]);
+  const bolim3CharPositions = useMemo(() => {
+    const chars = ['Lola', 'Akram', 'Ali', 'Soliha'] as const;
+    const pos = [
+      { left: '5%', top: '8%' },
+      { left: '38%', top: '55%' },
+      { left: '68%', top: '12%' },
+      { left: '88%', top: '50%' },
+    ];
+    const shuffled = [...pos].sort(() => Math.random() - 0.5);
+    return chars.map((name, i) => ({ name, ...shuffled[i] }));
+  }, []);
   const isAliNechanchiUy = lessonVariant === 'ali-nechanchi-uy';
   const isKatakQogoz = lessonVariant === 'katak-qogoz';
   const isRaqamYozish = lessonVariant === 'raqam-yozish';
@@ -1235,6 +1282,432 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </div>
           </div>
         )}
+      </div>
+    );
+  }
+
+  // Blok 3, topshiriq 1: etaplar — birinchi: odamlar soni, ikkinchi: tartib sonlar
+  if (isBolim3Task1) {
+    const handleBolim3Audio = (src: string) => {
+      setAudioPressed(true);
+      setTimeout(() => setAudioPressed(false), 300);
+      try {
+        new Audio(src).play().catch(() => {});
+      } catch {
+        // ignore
+      }
+    };
+    const bolim3Correct = 4;
+    const BOLIM3_ETAP2 = [
+      { name: 'Lola' as const, text: "Men birinchi", audio: 'men-birinchi.mp3' },
+      { name: 'Akram' as const, text: "Men ikkinchi", audio: 'men-ikkinchi.mp3' },
+      { name: 'Ali' as const, text: "Men uchinchi", audio: 'men-uchinchi.mp3' },
+      { name: 'Soliha' as const, text: "Men to'rtinchi", audio: 'men-tortinchi.mp3' },
+    ];
+    const BOLIM3_QUIZ_STAGES = [
+      { prompt: "Ikkinchida turgan bolani tanla", correctIndex: 1 },
+      { prompt: "Birinchida turgan bolani tanla", correctIndex: 0 },
+      { prompt: "Uchinchida turgan bolani tanla", correctIndex: 2 },
+      { prompt: "To'rtinchida turgan bolani tanla", correctIndex: 3 },
+    ];
+    const BOLIM3_TOTAL_STAGES = 10;
+    const BOLIM3_ORDINAL_LABELS = ["Birinchi", "Ikkinchi", "Uchinchi", "To'rtinchi"] as const;
+    const BOLIM3_ORDINAL_AUDIO = ['men-birinchi.mp3', 'men-ikkinchi.mp3', 'men-uchinchi.mp3', 'men-tortinchi.mp3'] as const;
+    const BOLIM3_NECHANCHI_STAGES = [
+      { prompt: "Ali nechanchi o'rinda?", correctIndex: 2, audio: 'ali-nechanchi.mp3' },
+      { prompt: "Lola nechanchi o'rinda?", correctIndex: 0, audio: 'lola-nechanchi.mp3' },
+      { prompt: "Akram nechanchi o'rinda?", correctIndex: 1, audio: 'akram-nechanchi.mp3' },
+      { prompt: "Soliha nechanchi o'rinda?", correctIndex: 3, audio: 'soliha-nechanchi.mp3' },
+    ] as const;
+
+    // Etaplar 6–9: “X nechanchi o'rinda?” — har bir qahramon uchun tartibni tanlash
+    let bolim3OrdinalOrder = bolim3Stage >= 6 && bolim3Stage <= 9 ? bolim3AliOrderRef.current[bolim3Stage] : undefined;
+    if (bolim3Stage >= 6 && bolim3Stage <= 9 && !bolim3OrdinalOrder) {
+      const order = [0, 1, 2, 3];
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      bolim3AliOrderRef.current[bolim3Stage] = order;
+      bolim3OrdinalOrder = order;
+    }
+    const bolim3OrdinalOrderSafe = bolim3OrdinalOrder ?? [0, 1, 2, 3];
+
+    if (bolim3Stage >= 6 && bolim3Stage <= 9) {
+      const nechanchiIndex = bolim3Stage - 6;
+      const nechanchi = BOLIM3_NECHANCHI_STAGES[nechanchiIndex];
+      return (
+        <div
+          className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
+        >
+          <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+            <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
+              <span className="text-2xl leading-none font-bold">←</span>
+            </button>
+            <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
+              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / BOLIM3_TOTAL_STAGES) * 100}%` }} aria-hidden />
+              {Array.from({ length: BOLIM3_TOTAL_STAGES }).map((_, i) => (
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              ))}
+            </div>
+            <div className="w-10 shrink-0" />
+          </header>
+          <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-8">
+            <div className="flex items-center justify-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleBolim3Audio(`${imageBaseUrl}/${nechanchi.audio}`)}
+                className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-gray-700 transition-all duration-200 active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`}
+                aria-label="Ovoz"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+              </button>
+              <p className="text-black text-lg sm:text-xl md:text-2xl font-bold text-center">
+                {nechanchi.prompt}
+              </p>
+            </div>
+            <div className="flex items-stretch justify-center gap-2 sm:gap-4 w-full max-w-2xl shrink-0" style={{ marginTop: '2cm' }}>
+              {BOLIM3_ETAP2.map(({ name, audio }) => (
+                <div key={name} className="flex flex-col items-center flex-1 min-w-0">
+                  <div className="origin-center" style={{ transform: 'scale(1.75)' }}>
+                    <CharacterAvatar name={name} size="md" />
+                  </div>
+                  <div className="flex items-center justify-center gap-1.5" style={{ marginTop: '2cm' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleBolim3Audio(`${imageBaseUrl}/${audio}`)}
+                      className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-gray-600 transition-all active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`}
+                      aria-label="Ovoz"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                      </svg>
+                    </button>
+                    <span className="text-sm sm:text-base font-bold text-black text-center">{name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-nowrap justify-center items-stretch gap-3 sm:gap-4 w-full max-w-3xl shrink-0 mt-4">
+              {bolim3OrdinalOrderSafe.map((ordinalIndex) => {
+                const label = BOLIM3_ORDINAL_LABELS[ordinalIndex];
+                const audioFile = BOLIM3_ORDINAL_AUDIO[ordinalIndex];
+                const isCorrect = ordinalIndex === nechanchi.correctIndex;
+                return (
+                  <div key={ordinalIndex} className="flex flex-col items-center gap-2 flex-1 min-w-0">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleBolim3Audio(`${imageBaseUrl}/${audioFile}`); }}
+                      className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-gray-600 transition-all active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`}
+                      aria-label="Ovoz"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (bolim3QuizShowNext) return;
+                        if (isCorrect) {
+                          new Audio(`${imageBaseUrl}/correct.mp3`).play().catch(() => {});
+                          setBolim3QuizShowNext(true);
+                        } else {
+                          new Audio(`${imageBaseUrl}/wrong.mp3`).play().catch(() => {});
+                        }
+                      }}
+                      className="w-full px-4 py-4 sm:px-5 sm:py-5 rounded-2xl bg-white border-2 border-gray-200 text-lg sm:text-xl font-bold text-gray-800 hover:bg-gray-50 hover:border-sky-300 active:scale-95 transition-all shadow-sm"
+                    >
+                      {label}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {bolim3QuizShowNext && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/30 p-6 pointer-events-none">
+              <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-xl">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-800">To&apos;g&apos;ri!</p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Etaplar 3–6: “X turgan bolani tanla” — to‘g‘ri javobni tanlash
+    if (bolim3Stage >= 2 && bolim3Stage <= 5) {
+      const quizIndex = bolim3Stage - 2;
+      const quiz = BOLIM3_QUIZ_STAGES[quizIndex];
+      const isLastQuiz = false;
+      return (
+        <div
+          className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
+        >
+          <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+            <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
+              <span className="text-2xl leading-none font-bold">←</span>
+            </button>
+            <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
+              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / BOLIM3_TOTAL_STAGES) * 100}%` }} aria-hidden />
+              {Array.from({ length: BOLIM3_TOTAL_STAGES }).map((_, i) => (
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              ))}
+            </div>
+            <div className="w-10 shrink-0" />
+          </header>
+          <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-24">
+            <div className="flex items-center justify-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleBolim3Audio(`${imageBaseUrl}/tanla.mp3`)}
+                className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-gray-700 transition-all duration-200 active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`}
+                aria-label="Ovoz"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+              </button>
+              <p className="text-black text-lg sm:text-xl md:text-2xl font-bold text-center">
+                {quiz.prompt}
+              </p>
+            </div>
+            <div className="flex items-stretch justify-center gap-2 sm:gap-4 flex-1 w-full max-w-2xl" style={{ marginTop: '3cm' }}>
+              {BOLIM3_ETAP2.map(({ name, text, audio }, index) => {
+                const isCorrect = index === quiz.correctIndex;
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => {
+                      if (bolim3QuizShowNext) return;
+                      if (isCorrect) {
+                        new Audio(`${imageBaseUrl}/correct.mp3`).play().catch(() => {});
+                        setBolim3QuizShowNext(true);
+                      } else {
+                        new Audio(`${imageBaseUrl}/wrong.mp3`).play().catch(() => {});
+                      }
+                    }}
+                    className="group flex flex-col items-center flex-1 min-w-0 active:scale-95 transition-transform"
+                  >
+                    <div className="origin-center" style={{ transform: 'scale(1.75)' }}>
+                      <div className="transition-transform duration-200 group-hover:scale-110">
+                        <CharacterAvatar name={name} size="md" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-1.5" style={{ marginTop: '2cm' }}>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleBolim3Audio(`${imageBaseUrl}/${audio}`); }}
+                        className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-gray-600 transition-all active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`}
+                        aria-label="Ovoz"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                        </svg>
+                      </button>
+                      <span className="text-sm sm:text-base font-bold text-black text-center">{text}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          {bolim3QuizShowNext && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/30 p-6 pointer-events-none">
+              <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-xl">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-800">To&apos;g&apos;ri!</p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Ikkinchi etap: Tartib sonlarni o'rganamiz (Lola birinchi, Akram ikkinchi, ...)
+    if (bolim3Stage === 1) {
+      return (
+        <div
+          className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
+        >
+          <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+            <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
+              <span className="text-2xl leading-none font-bold">←</span>
+            </button>
+            <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
+              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / BOLIM3_TOTAL_STAGES) * 100}%` }} aria-hidden />
+              {Array.from({ length: BOLIM3_TOTAL_STAGES }).map((_, i) => (
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              ))}
+            </div>
+            <div className="w-10 shrink-0" />
+          </header>
+          <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-24">
+            <div className="flex items-center justify-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleBolim3Audio(`${imageBaseUrl}/tartib-sonlar.mp3`)}
+                className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-gray-700 transition-all duration-200 active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`}
+                aria-label="Ovoz"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+              </button>
+              <p className="text-black text-lg sm:text-xl md:text-2xl font-bold text-center">
+                Tartib sonlarni o&apos;rganamiz
+              </p>
+            </div>
+            <div className="flex items-stretch justify-center gap-2 sm:gap-4 flex-1 w-full max-w-2xl" style={{ marginTop: '3cm' }}>
+              {BOLIM3_ETAP2.map(({ name, text, audio }) => (
+                <div key={name} className="flex flex-col items-center flex-1 min-w-0">
+                  <div className="origin-center" style={{ transform: 'scale(1.75)' }}>
+                    <CharacterAvatar name={name} size="md" />
+                  </div>
+                  <div className="flex items-center justify-center gap-1.5" style={{ marginTop: '2cm' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleBolim3Audio(`${imageBaseUrl}/${audio}`)}
+                      className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-gray-600 transition-all active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`}
+                      aria-label="Ovoz"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                      </svg>
+                    </button>
+                    <span className="text-sm sm:text-base font-bold text-black text-center">{text}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="absolute left-0 right-0 z-10 px-4 py-4 safe-area-pb" style={{ bottom: '2cm' }}>
+            <button
+              type="button"
+              onClick={() => setBolim3Stage(2)}
+              className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-4 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-xl shadow-md"
+            >
+              Davom etish
+              <span className="text-xl">→</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Birinchi etap: ekranda nechta odam — javob 4
+    return (
+      <div
+        className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
+      >
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+          <button
+            type="button"
+            onClick={onBack}
+            className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10"
+            aria-label="Orqaga"
+          >
+            <span className="text-2xl leading-none font-bold">←</span>
+          </button>
+          <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
+            <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / 10) * 100}%` }} aria-hidden />
+            {Array.from({ length: 10 }).map((_, i) => (
+              <span key={i} className={`relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+            ))}
+          </div>
+          <div className="w-10 shrink-0" />
+        </header>
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-2 gap-3 overflow-y-auto pb-[5.5rem]">
+          <div className="flex items-center justify-center gap-2 shrink-0 mt-4 flex-wrap">
+            <button
+              type="button"
+              onClick={() => handleBolim3Audio(`${imageBaseUrl}/ekranda-odam.mp3`)}
+              className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-gray-700 transition-all duration-200 ease-out active:scale-90 ${
+                audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'
+              }`}
+              aria-label="Ovoz"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+              </svg>
+            </button>
+            <p className="text-black text-lg sm:text-xl md:text-2xl font-bold text-center shrink-0">
+              Ekranda qancha odamni ko&apos;ryapsan?
+            </p>
+            <div
+              className="min-w-[3.5rem] h-12 sm:h-14 rounded-2xl border-4 flex items-center justify-center font-bold text-2xl sm:text-3xl text-[#3f4699] bg-amber-50 border-amber-500 shadow-lg ring-2 ring-amber-400/50 shrink-0 px-3"
+              style={{ minWidth: '4rem' }}
+            >
+              {bolim3Answer || <span className="animate-blink text-[#3f4699]">|</span>}
+            </div>
+          </div>
+          <div className="relative w-full flex-1 min-h-[10rem] sm:min-h-[12rem] mt-2">
+            {bolim3CharPositions.map(({ name, left, top }) => (
+              <div
+                key={name}
+                className="absolute origin-center"
+                style={{ left, top, transform: 'scale(1.75)' }}
+              >
+                <CharacterAvatar name={name} size="md" />
+              </div>
+            ))}
+          </div>
+        </div>
+        {bolim3Answer === String(bolim3Correct) && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/30 p-6 pointer-events-none">
+            <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-xl">
+              <p className="text-2xl sm:text-3xl font-bold text-gray-800">To&apos;g&apos;ri!</p>
+            </div>
+          </div>
+        )}
+        <div className="absolute left-0 right-0 bottom-0 z-10 rounded-t-2xl px-3 pt-3 pb-6 sm:pb-8 safe-area-pb" style={{ backgroundColor: '#e3e8f4' }}>
+          <div className="flex items-center justify-center gap-2 sm:gap-2.5 max-w-4xl mx-auto flex-wrap">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num) => (
+              <button
+                key={num}
+                type="button"
+                onClick={() => {
+                  if (bolim3Answer !== '') return;
+                  const isCorrect = num === bolim3Correct;
+                  setBolim3Answer(String(num));
+                  if (isCorrect) {
+                    new Audio(`${imageBaseUrl}/correct.mp3`).play().catch(() => {});
+                    // 1.2 sekunddan keyin ikkinchi etapga o‘tamiz (Tartib sonlar)
+                    setTimeout(() => {
+                      setBolim3Stage(1);
+                      setBolim3Answer('');
+                    }, 1200);
+                  } else {
+                    new Audio(`${imageBaseUrl}/wrong.mp3`).play().catch(() => {});
+                    setTimeout(() => setBolim3Answer(''), 800);
+                  }
+                }}
+                className="rounded-xl bg-white text-[#3f4699] font-bold shadow-sm border border-gray-200/80 hover:bg-gray-50 active:scale-95 transition-transform w-[3.15rem] h-[3.85rem] sm:w-[3.85rem] sm:h-[4.2rem] text-[1.575rem] sm:text-[1.75rem]"
+                aria-label={String(num)}
+              >
+                {num}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setBolim3Answer('')}
+              className="rounded-xl flex items-center justify-center shadow-sm border border-gray-200/80 hover:bg-gray-100 active:scale-95 transition-transform w-[3.15rem] h-[3.85rem] sm:w-[3.85rem] sm:h-[4.2rem]"
+              style={{ backgroundColor: '#dce8f9' }}
+              aria-label="O'chirish"
+            >
+              <svg className="w-7 h-7 sm:w-8 sm:h-8" style={{ color: '#7a9fd4' }} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden>
+                <path d="M21 12H8M8 12l5-5M8 12l5 5" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

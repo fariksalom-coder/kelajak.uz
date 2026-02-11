@@ -158,6 +158,7 @@ export default function CourseDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedLesson, setSelectedLesson] = useState<SelectedLesson | null>(null);
   const [lessonScreen, setLessonScreen] = useState<'start' | 'content'>('start');
+  const [bolim3Task1Stage, setBolim3Task1Stage] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(() => getCompletedLessons());
   const sectionsScrollRef = useRef<HTMLDivElement>(null);
   const startAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -168,6 +169,11 @@ export default function CourseDetailPage() {
     setSelectedLesson({ tabIndex: activeTab, sectionIdx, lessonIdx, lessonLabel, subsectionTitle });
     setLessonScreen('start');
   };
+
+  // Bo'lim 3 topshiriq 1: yangi dars ochilganda etapni 0 qilamiz
+  useEffect(() => {
+    setBolim3Task1Stage(0);
+  }, [selectedLesson]);
 
   const closeLesson = () => {
     setSelectedLesson(null);
@@ -418,11 +424,12 @@ export default function CourseDetailPage() {
             <div
               className="fixed inset-0 z-50 flex flex-col bg-cover bg-center bg-no-repeat"
               style={{
-                backgroundImage: `url(${getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx)}/${activeTab === 0 && selectedLesson.sectionIdx === 1 ? 'fon4.png' : 'fon.png'})`,
+                backgroundImage: `url(${getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx)}/${activeTab === 0 && (selectedLesson.sectionIdx === 1 || selectedLesson.sectionIdx === 2) ? 'fon4.png' : 'fon.png'})`,
               }}
             >
               {lessonScreen === 'start' && (
                 <div className="flex-1 min-h-0 flex flex-col items-center justify-center relative p-4 sm:p-6 overflow-y-auto">
+                  {activeTab === 0 && selectedLesson.sectionIdx === 2 ? null : (
                   <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
                     <div className="flex items-center gap-4 opacity-30 blur-md scale-90">
                       <CharacterAvatar name="Lola" size="lg" priority />
@@ -432,6 +439,7 @@ export default function CourseDetailPage() {
                       </span>
                     </div>
                   </div>
+                  )}
                   <button
                     type="button"
                     onClick={handleStartClick}
@@ -460,8 +468,12 @@ export default function CourseDetailPage() {
                               ? 'raqam-yozish'
                               : activeTab === 0 && selectedLesson.sectionIdx === 1 && selectedLesson.lessonIdx >= 3
                                 ? 'buyumlarni-next'
-                                : 'boshlash'
+                                : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0
+                                  ? 'bolim3-task1'
+                                  : 'boshlash'
                   }
+                  bolim3Task1Stage={activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0 ? bolim3Task1Stage : undefined}
+                  onBolim3Task1StageChange={activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0 ? setBolim3Task1Stage : undefined}
                   childId={childId ?? undefined}
                   courseId={courseId}
                   lessonSlug={getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx).split('/').pop() ?? 'lesson'}
