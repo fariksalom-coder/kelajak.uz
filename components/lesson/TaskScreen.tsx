@@ -123,7 +123,16 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
   const isBolim3Task1 = lessonVariant === 'bolim3-task1';
   const [bolim3StageLocal, setBolim3StageLocal] = useState(0);
   const bolim3Stage = onBolim3Task1StageChange != null && bolim3StageProp !== undefined ? bolim3StageProp : bolim3StageLocal;
-  const setBolim3Stage = onBolim3Task1StageChange ? (s: number | ((prev: number) => number)) => { const v = typeof s === 'function' ? s(bolim3StageProp ?? 0) : s; onBolim3Task1StageChange(v); } : setBolim3StageLocal;
+  const setBolim3Stage = useMemo(
+    () =>
+      onBolim3Task1StageChange
+        ? (s: number | ((prev: number) => number)) => {
+            const v = typeof s === 'function' ? s(bolim3StageProp ?? 0) : s;
+            onBolim3Task1StageChange(v);
+          }
+        : setBolim3StageLocal,
+    [onBolim3Task1StageChange, bolim3StageProp]
+  );
   const [bolim3Answer, setBolim3Answer] = useState('');
   const [bolim3QuizShowNext, setBolim3QuizShowNext] = useState(false);
   const bolim3AliOrderRef = useRef<Record<number, number[]>>({});
@@ -230,6 +239,17 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
   const raketaniStartAudioRef = useRef<HTMLAudioElement | null>(null);
   const [audioPressed, setAudioPressed] = useState(false);
   const [stage, setStage] = useState(0);
+  const wrongTriplesStage3 = useMemo(() => {
+    const correct = [7, 3, 6];
+    const pick = () => Math.floor(Math.random() * 10) + 1;
+    const makeTriple = (): number[] => [pick(), pick(), pick()];
+    const same = (a: number[], b: number[]) => a.length === b.length && a.every((v, i) => v === b[i]);
+    let a = makeTriple();
+    while (same(a, correct)) a = makeTriple();
+    let b = makeTriple();
+    while (same(b, correct) || same(b, a)) b = makeTriple();
+    return [a, b];
+  }, []);
   const [wrongIndices, setWrongIndices] = useState<Set<number>>(new Set());
   const [correctSelected, setCorrectSelected] = useState(false);
   const [completedSteps, setCompletedSteps] = useState(0);
@@ -330,16 +350,17 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
       setSwapAnimation(null);
       setSwapAnimating(false);
     }
-  }, [sayyoraniStage, isSayyoraniSortOrder]);
+  }, [sayyoraniStage, isSayyoraniSortOrder, sayyoraniData.type]);
+  const sayyoraniFindNumberNumbers = isSayyoraniFindNumber ? (sayyoraniData as SayyoraniFindNumberStage).numbers : null;
   const sayyoraniFindNumberOrder = useMemo(() => {
-    if (!isSayyoraniFindNumber) return [];
-    const arr = [...sayyoraniData.numbers];
+    if (!isSayyoraniFindNumber || !sayyoraniFindNumberNumbers) return [];
+    const arr = [...sayyoraniFindNumberNumbers];
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
-  }, [sayyoraniStage, isSayyoraniFindNumber]);
+  }, [sayyoraniStage, isSayyoraniFindNumber, sayyoraniFindNumberNumbers]);
   const sayyoraniOptions = sayyoraniData.type === 'squares' ? sayyoraniData.options : [];
   const sayyoraniCorrectIndex =
     sayyoraniData.type === 'squares'
@@ -2199,18 +2220,6 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
   const knopkaSrc = isWords ? `${imageBaseUrl}/knopka_etap3.png` : `${imageBaseUrl}/knopka.png`;
   const starSrc = `${imageBaseUrl}/star.png`;
   const stoneSrc = `${imageBaseUrl}/stone.png`;
-
-  const wrongTriplesStage3 = useMemo(() => {
-    const correct = [7, 3, 6];
-    const pick = () => Math.floor(Math.random() * 10) + 1;
-    const makeTriple = (): number[] => [pick(), pick(), pick()];
-    const same = (a: number[], b: number[]) => a.length === b.length && a.every((v, i) => v === b[i]);
-    let a = makeTriple();
-    while (same(a, correct)) a = makeTriple();
-    let b = makeTriple();
-    while (same(b, correct) || same(b, a)) b = makeTriple();
-    return [a, b];
-  }, [stage]);
 
   const playCorrectAudio = () => {
     try {
