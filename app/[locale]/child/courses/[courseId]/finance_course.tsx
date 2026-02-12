@@ -95,7 +95,7 @@ export default function FinanceCoursePage({
             >
               <div className="flex justify-center mb-4">
                 <span className="inline-block px-6 py-2 rounded-full bg-blue-500 text-white font-bold text-center">
-                  Bo&apos;lim {id}
+                  Bo'lim {id}
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-start">
@@ -134,7 +134,7 @@ export default function FinanceCoursePage({
                       <div className="w-full aspect-[2/1] rounded-xl border-2 border-sky-400 bg-white flex items-center justify-center shadow-sm group-hover:border-sky-500 group-hover:bg-sky-50/50 transition-colors">
                         <span className="text-lg font-bold text-sky-600">Test</span>
                       </div>
-                      <span className="mt-2 text-center font-medium text-gray-800 text-base sm:text-lg whitespace-nowrap">
+                      <span className="mt-2 text-center font-medium text-gray-800 text-base sm:text-lg">
                         Test
                       </span>
                     </Link>
@@ -143,7 +143,7 @@ export default function FinanceCoursePage({
                       <div className="w-full aspect-[2/1] max-w-[200px] rounded-xl border-2 border-gray-300 bg-gray-100 flex items-center justify-center shadow-sm">
                         <span className="text-lg font-bold text-gray-400">Test</span>
                       </div>
-                      <span className="mt-2 text-center font-medium text-gray-800 text-base sm:text-lg whitespace-nowrap">
+                      <span className="mt-2 text-center font-medium text-gray-800 text-base sm:text-lg">
                         Test
                       </span>
                     </>

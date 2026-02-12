@@ -83,11 +83,16 @@ export default function ChildMainPage() {
 
   const MATH_COMPLETED_KEY = 'zukko_math1grade_s0_completed';
 
-  const fetchCourses = () =>
+  const fetchCourses = () => {
+    if (!childId) return;
     fetch(`/api/child/${childId}/courses`)
-      .then((r) => r.json())
-      .then(async (data) => {
-        const list = data.courses ?? [];
+      .then(async (r) => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          setCourses([]);
+          return;
+        }
+        const list = Array.isArray(data.courses) ? data.courses : [];
         const mathCourse = list.find(
           (c: CourseItem) =>
             ((c.titleUz ?? c.title) || '').toLowerCase().includes('matematika') &&
@@ -106,8 +111,9 @@ export default function ChildMainPage() {
                 body: JSON.stringify({ courseId: mathCourse.id, completedCount: localCount }),
               });
               const res = await fetch(`/api/child/${childId}/courses`);
-              const next = await res.json();
-              setCourses(next.courses ?? list);
+              const nextData = await res.json().catch(() => ({}));
+              const nextList = Array.isArray(nextData.courses) ? nextData.courses : [];
+              setCourses(nextList);
               return;
             }
           } catch {
@@ -116,7 +122,9 @@ export default function ChildMainPage() {
         }
         setCourses(list);
       })
+      .catch(() => setCourses([]))
       .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     if (!childId) return;

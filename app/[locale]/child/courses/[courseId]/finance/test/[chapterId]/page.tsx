@@ -61,7 +61,7 @@ function FinanceTestContent() {
   if (!isValidChapter) {
     return (
       <main className="max-w-lg mx-auto px-4 py-8">
-        <p className="text-gray-600 mb-4">Bunday bo&apos;lim topilmadi.</p>
+        <p className="text-gray-600 mb-4">Bunday bo'lim topilmadi.</p>
         <Link href={backUrl} className="text-blue-600 underline">
           Kursga qaytish
         </Link>
@@ -79,11 +79,11 @@ function FinanceTestContent() {
         >
           <span className="text-xl leading-none">←</span>
         </Link>
-        <h1 className="text-xl font-bold text-gray-800">Bo&apos;lim {chapterId} — Test</h1>
+        <h1 className="text-xl font-bold text-gray-800">Bo'lim {chapterId} — Test</h1>
       </header>
 
       <p className="text-gray-600 mb-6">
-        Test mazmuni tez orada qo&apos;shiladi. Demo rejimida tugatish tugmasini bosing.
+        Test mazmuni tez orada qo'shiladi. Demo rejimida tugatish tugmasini bosing.
       </p>
 
       <button
