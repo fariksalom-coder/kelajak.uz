@@ -144,22 +144,6 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
   const [block3Task2ShowCongrats, setBlock3Task2ShowCongrats] = useState(false);
   const block3Task2Stage1OptionsRef = useRef<{ stage: number; options: number[] } | null>(null);
   const block3AliOrderRef = useRef<Record<number, number[]>>({});
-  const [isShortHeight, setIsShortHeight] = useState(false);
-  const [contentScale, setContentScale] = useState(1);
-  useEffect(() => {
-    const mql = window.matchMedia('(max-height: 520px)');
-    const update = () => {
-      setIsShortHeight(mql.matches);
-      setContentScale(Math.min(1, window.innerHeight / 600));
-    };
-    update();
-    mql.addEventListener('change', update);
-    window.addEventListener('resize', update);
-    return () => {
-      mql.removeEventListener('change', update);
-      window.removeEventListener('resize', update);
-    };
-  }, []);
   useEffect(() => {
     if (!isBlock3Task2 || block3Task2Stage !== 0 || block3Task2Selected !== 6) return;
     const t = setTimeout(() => {
@@ -620,7 +604,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </div>
         ) : (
         <>
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button
             type="button"
             onClick={onBack}
@@ -629,7 +613,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           >
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
-          <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+          <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             {tartibBilanProgress > 0 && (
               <div
                 className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all duration-500"
@@ -640,14 +624,14 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             {Array.from({ length: TARTIB_BILAN_ETAPS }).map((_, i) => (
               <span
                 key={i}
-                className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`}
+                className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0"
                 aria-hidden
               />
             ))}
           </div>
           <div className="w-10 shrink-0" />
         </header>
-        <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-2 gap-2 overflow-y-auto ${(isStage3 || isStage4 || isStage5 || isStage6 || isStage7) ? 'pb-4' : 'pb-[5.5rem]'}`}>
+        <div className={`absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-2 gap-2 overflow-y-auto ${(isStage3 || isStage4 || isStage5 || isStage6 || isStage7) ? 'pb-4' : 'pb-[5.5rem]'}`}>
           <div className="flex items-center justify-center gap-2 shrink-0">
             <button
               type="button"
@@ -661,14 +645,11 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
               </svg>
             </button>
-            <p className={`text-black font-bold text-center shrink-0 ${isShortHeight ? 'text-base sm:text-lg' : 'text-xl sm:text-2xl md:text-3xl'}`}>
+            <p className="text-black text-xl sm:text-2xl md:text-3xl font-bold text-center shrink-0">
               {isStage7 ? '1 va 5-uyni toping' : isStage6 ? '7-uyni toping' : isStage5 ? '4-uyni toping' : isStage4 ? '6-uyni toping' : isStage3 ? '3-uyni toping' : 'Har bir uychaning raqamini yoz'}
             </p>
           </div>
-          <div
-            className={`w-full flex flex-nowrap gap-0 shrink-0 overflow-visible ${isShortHeight ? 'mt-2' : 'mt-[3cm]'}`}
-            style={isShortHeight ? { transform: 'scale(0.88)', transformOrigin: 'center top' } : undefined}
-          >
+          <div className="w-full flex flex-nowrap gap-0 shrink-0 mt-[3cm] overflow-visible">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
               const idx = i - 1;
               const isPreFilled = (isStage1 && idx >= 5) || (isStage2 && (idx === 3 || idx === 7)); // этап1: 6,7,8; этап2: 4 и 8
@@ -922,7 +903,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
       >
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button
             type="button"
             onClick={onBack}
@@ -931,7 +912,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           >
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
-          <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+          <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             {aliUyProgress > 0 && (
               <div
                 className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all duration-500"
@@ -940,12 +921,12 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               />
             )}
             {Array.from({ length: ALI_UY_ETAPS }).map((_, i) => (
-              <span key={i} className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`} aria-hidden />
+              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
         </header>
-        <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-2 gap-2 overflow-y-auto pb-[5.5rem]`}>
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-2 gap-2 overflow-y-auto pb-[5.5rem]">
           <div className="flex items-center justify-center gap-2 shrink-0 mt-[2cm]">
             <button
               type="button"
@@ -1078,7 +1059,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
       >
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button
             type="button"
             onClick={onBack}
@@ -1087,14 +1068,14 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           >
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
-          <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+          <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             {Array.from({ length: 1 }).map((_, i) => (
-              <span key={i} className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`} aria-hidden />
+              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
         </header>
-        <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-4 pb-8 overflow-y-auto`}>
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 pb-8 overflow-y-auto">
           <div className="flex items-center justify-center gap-2 shrink-0 mt-[1.5cm]">
             <button
               type="button"
@@ -1218,7 +1199,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
       >
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button
             type="button"
             onClick={onBack}
@@ -1228,7 +1209,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
           {!isIntro ? (
-            <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+            <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
               {raqamYozishProgress > 0 && (
                 <div
                   className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all duration-500"
@@ -1237,7 +1218,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 />
               )}
               {Array.from({ length: RAQAM_YOZISH_ETAPS }).map((_, i) => (
-                <span key={i} className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`} aria-hidden />
+                <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
               ))}
             </div>
           ) : (
@@ -1245,7 +1226,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           )}
           <div className="w-10 shrink-0" />
         </header>
-        <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-3 pb-8 overflow-y-auto`}>
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-3 pb-8 overflow-y-auto">
           {isIntro ? (
             <>
               <div className="flex items-center justify-center gap-2 shrink-0 mt-[1.5cm]">
@@ -1359,7 +1340,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${imageBaseUrl}/fon_blok4.png)` }}
       >
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
@@ -1465,7 +1446,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
       >
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
@@ -1477,7 +1458,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </div>
           <div className="w-10 shrink-0" />
         </header>
-        <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-8`}>
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-8">
           {block3Task2Stage === 0 ? (
             <>
               <div className="flex items-center justify-center gap-2 shrink-0">
@@ -1488,12 +1469,12 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                   Ekranda nechta aylana chizilgan?
                 </p>
               </div>
-              <div className="flex flex-wrap justify-center gap-3 sm:gap-4" style={{ marginTop: '2cm' }}>
+              <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 justify-items-center" style={{ marginTop: '2cm' }}>
                 {circleColorsStage0.map((color, i) => (
                   <div key={i} className={`rounded-full shrink-0 ${color} shadow-md`} style={{ width: '4cm', height: '4cm', maxWidth: 'min(4cm, 18vw)', maxHeight: 'min(4cm, 18vw)' }} aria-hidden />
                 ))}
               </div>
-              <div className="flex flex-wrap justify-center gap-4 sm:gap-5" style={{ marginTop: '1cm' }}>
+              <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 md:gap-5 justify-items-center" style={{ marginTop: '1cm' }}>
                 {[4, 5, 6].map((value) => {
                   const correctAnswer = 6;
                   const selected = block3Task2Selected === value;
@@ -1534,12 +1515,12 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                   {TASK2_COLOR_PROMPTS[block3Task2Stage - 1]}
                 </p>
               </div>
-              <div className="flex flex-wrap justify-center gap-3 sm:gap-4" style={{ marginTop: '2cm' }}>
+              <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 justify-items-center" style={{ marginTop: '2cm' }}>
                 {circleColorsOrdinal.map((color, i) => (
                   <div key={i} className={`rounded-full shrink-0 ${color} shadow-md`} style={{ width: '4cm', height: '4cm', maxWidth: 'min(4cm, 18vw)', maxHeight: 'min(4cm, 18vw)' }} aria-hidden />
                 ))}
               </div>
-              <div className="flex flex-wrap justify-center gap-4 sm:gap-5" style={{ marginTop: '1cm' }}>
+              <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 md:gap-5 justify-items-center" style={{ marginTop: '1cm' }}>
                 {(stage1Options ?? [0, 1, 2]).map((ordinalIndex) => {
                   const label = TASK2_ORDINALS[ordinalIndex];
                   const correct = ordinalIndex === correctOrdinalIndex;
@@ -1686,7 +1667,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
         >
-          <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+          <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
             <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
               <span className="text-2xl leading-none font-bold">←</span>
             </button>
@@ -1698,7 +1679,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </div>
             <div className="w-10 shrink-0" />
           </header>
-          <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-8`}>
+          <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-8">
             <div className="flex items-center justify-center gap-2 shrink-0">
               <button
                 type="button"
@@ -1794,7 +1775,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
         >
-          <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+          <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
             <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
               <span className="text-2xl leading-none font-bold">←</span>
             </button>
@@ -1806,7 +1787,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </div>
             <div className="w-10 shrink-0" />
           </header>
-          <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-24`}>
+          <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-24">
             <div className="flex items-center justify-center gap-2 shrink-0">
               <button
                 type="button"
@@ -1881,7 +1862,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
         >
-          <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+          <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
             <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
               <span className="text-2xl leading-none font-bold">←</span>
             </button>
@@ -1893,7 +1874,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </div>
             <div className="w-10 shrink-0" />
           </header>
-          <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-24`}>
+          <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-24">
             <div className="flex items-center justify-center gap-2 shrink-0">
               <button
                 type="button"
@@ -1952,7 +1933,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
       >
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button
             type="button"
             onClick={onBack}
@@ -1961,15 +1942,15 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           >
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
-          <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+          <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / 10) * 100}%` }} aria-hidden />
             {Array.from({ length: 10 }).map((_, i) => (
-              <span key={i} className={`relative z-10 rounded-full shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'} ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              <span key={i} className={`relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
         </header>
-        <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0 flex flex-col items-center px-4 pt-2 gap-3 overflow-y-auto pb-[5.5rem]`}>
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-2 gap-3 overflow-y-auto pb-[5.5rem]">
           <div className="flex items-center justify-center gap-2 shrink-0 mt-4 flex-wrap">
             <button
               type="button"
@@ -2064,7 +2045,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
       >
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button
             type="button"
             onClick={onBack}
@@ -2073,14 +2054,14 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           >
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
-          <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+          <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             {Array.from({ length: 1 }).map((_, i) => (
-              <span key={i} className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`} aria-hidden />
+              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
         </header>
-        <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12' : 'top-14 sm:top-16'} bottom-0`} />
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0" />
       </div>
     );
   }
@@ -2177,7 +2158,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </div>
         ) : (
           <>
-            <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+            <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
               <button
                 type="button"
                 onClick={onBack}
@@ -2186,7 +2167,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               >
                 <span className="text-2xl leading-none font-bold">←</span>
               </button>
-              <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+              <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
                 {raketaniStage > 0 && (
                   <div
                     className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all duration-500"
@@ -2195,12 +2176,12 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                   />
                 )}
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-                  <span key={i} className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`} aria-hidden />
+                  <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
                 ))}
               </div>
               <div className="w-10 shrink-0" />
             </header>
-            <div className={`absolute left-0 right-0 ${isShortHeight ? 'top-10 sm:top-12 bottom-16 sm:bottom-20' : 'top-14 sm:top-16 bottom-20 sm:bottom-24'} z-10 flex flex-col items-center px-4 overflow-y-auto pt-4`}>
+            <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-20 sm:bottom-24 z-10 flex flex-col items-center px-4 overflow-y-auto pt-4">
               <div className="flex items-center justify-center gap-2 shrink-0">
                 <button
                   type="button"
@@ -2285,7 +2266,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </div>
         ) : (
         <>
-        <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
           <button
             type="button"
             onClick={onBack}
@@ -2294,7 +2275,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           >
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
-          <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+          <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             {sayyoraniProgress > 0 && (
               <div
                 className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all duration-500"
@@ -2305,17 +2286,14 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             {Array.from({ length: SAYYORANI_STAGES.length }).map((_, i) => (
               <span
                 key={i}
-                className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`}
+                className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0"
                 aria-hidden
               />
             ))}
           </div>
           <div className="w-10 shrink-0" />
         </header>
-        <div
-          className={`absolute left-0 right-0 z-10 flex flex-col px-4 ${isShortHeight ? 'top-10 sm:top-12 bottom-16 sm:bottom-20 pt-2 gap-2' : 'top-14 sm:top-16 bottom-20 sm:bottom-24 pt-[1cm] gap-[1.5cm]'}`}
-          style={contentScale < 1 ? { transform: `scale(${contentScale})`, transformOrigin: 'top center' } : undefined}
-        >
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-20 sm:bottom-24 z-10 flex flex-col px-4 pt-[1cm] gap-[1.5cm]">
           <div className="flex items-center justify-center gap-2 shrink-0">
             <button
               type="button"
@@ -2329,27 +2307,27 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
               </svg>
             </button>
-            <p className={`text-white font-bold text-center drop-shadow ${isShortHeight ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl md:text-4xl'}`}>
+            <p className="text-white text-2xl sm:text-3xl md:text-4xl font-bold text-center drop-shadow">
               {isSayyoraniFindNumber || isSayyoraniCountPeople || isSayyoraniChooseTaller || isSayyoraniSortOrder ? sayyoraniData.label : 'Tushirib qoldirilgan sonni tanlang'}
             </p>
           </div>
           {sayyoraniData.type === 'squares' && (
             <>
               {/* 5 ta kvadrat */}
-              <div className={`flex items-center justify-center shrink-0 ${isShortHeight ? 'gap-2' : 'gap-3 sm:gap-4'}`}>
+              <div className="flex items-center justify-center gap-3 sm:gap-4 shrink-0">
                 {sayyoraniData.squares.map((val, i) => (
                   <div
                     key={i}
-                    className={`rounded-xl bg-amber-100 border-2 border-amber-600 flex items-center justify-center shadow-xl ${isShortHeight ? 'w-16 h-16 sm:w-20 sm:h-20' : 'w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40'}`}
+                    className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl bg-amber-100 border-2 border-amber-600 flex items-center justify-center shadow-xl"
                   >
-                    <span className={`font-bold ${val === '?' ? 'text-sky-600' : 'text-amber-900'} ${isShortHeight ? 'text-2xl sm:text-3xl' : 'text-4xl sm:text-5xl md:text-6xl'}`}>
+                    <span className={`text-4xl sm:text-5xl md:text-6xl font-bold ${val === '?' ? 'text-sky-600' : 'text-amber-900'}`}>
                       {val}
                     </span>
                   </div>
                 ))}
               </div>
               {/* 3 ta yumaloq javob */}
-              <div className={`flex items-center justify-center flex-wrap shrink-0 ${isShortHeight ? 'gap-3 sm:gap-4' : 'gap-6 sm:gap-8'}`}>
+              <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap shrink-0">
                 {sayyoraniOptions.map((num, index) => {
                   const isWrong = wrongIndices.has(index) || (correctSelected && index !== sayyoraniCorrectIndex);
                   const isCorrect = correctSelected && index === sayyoraniCorrectIndex;
@@ -2359,9 +2337,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                       type="button"
                       onClick={() => handleSayyoraniAnswer(index)}
                       disabled={wrongIndices.has(index) || correctSelected}
-                      className={`rounded-full font-bold text-sky-900 bg-sky-100 border-2 border-sky-600 shadow-lg transition-all duration-300 ${
-                        isShortHeight ? 'w-20 h-20 sm:w-24 sm:h-24 text-2xl sm:text-3xl' : 'w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 text-4xl sm:text-5xl md:text-6xl'
-                      } ${
+                      className={`w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full font-bold text-4xl sm:text-5xl md:text-6xl text-sky-900 bg-sky-100 border-2 border-sky-600 shadow-lg transition-all duration-300 ${
                         isWrong ? 'opacity-50 cursor-default' : isCorrect ? 'scale-110 ring-2 ring-green-500' : 'hover:scale-105 active:scale-95'
                       }`}
                     >
@@ -2617,7 +2593,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
       ) : (
         <>
       {/* Yuqori bar — bir xil rangdagi to'rtburchak */}
-      <header className={`absolute left-0 right-0 top-0 z-10 flex ${isShortHeight ? 'h-10 sm:h-12' : 'h-14 sm:h-16'} items-center justify-between gap-3 px-3 sm:px-4`} style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+      <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
         <button
           type="button"
           onClick={onBack}
@@ -2627,7 +2603,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           <span className="text-2xl leading-none font-bold">←</span>
         </button>
         {/* Nuqtalar — barcha bosqichlar */}
-        <div className={`relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 ${isShortHeight ? 'h-[1.2rem] sm:h-[1.4rem]' : 'h-[1.8rem] sm:h-[2.1rem]'} px-2 sm:px-3 overflow-hidden`}>
+        <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
           {(completedSteps > 0 || correctSelected) && (
             <div
               className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all duration-500"
@@ -2638,7 +2614,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           {Array.from({ length: STAGES.length }).map((_, i) => (
             <span
               key={i}
-              className={`relative z-10 rounded-full bg-white/70 shrink-0 ${isShortHeight ? 'w-1 h-1 sm:w-1.5 sm:h-1.5' : 'w-1.5 h-1.5 sm:w-2 sm:h-2'}`}
+              className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0"
               aria-hidden
             />
           ))}
@@ -2647,10 +2623,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
       </header>
 
       {/* Matn va ramka: matn va yulduz/tosh bloklari aralashmasin */}
-      <div
-        className={`absolute left-0 right-0 z-10 flex flex-col px-4 ${isShortHeight ? 'top-10 sm:top-12 bottom-16 sm:bottom-20' : 'top-14 sm:top-16 bottom-20 sm:bottom-24'} ${isShortHeight ? 'pt-2' : 'pt-[1cm]'} ${isShortHeight ? 'gap-2' : (isStarStone || isStarStoneMiddle || isShapes ? 'gap-[2.5cm]' : 'gap-[1cm]')}`}
-        style={contentScale < 1 ? { transform: `scale(${contentScale})`, transformOrigin: 'top center' } : undefined}
-      >
+      <div className={`absolute left-0 right-0 top-14 sm:top-16 bottom-20 sm:bottom-24 z-10 flex flex-col px-4 pt-[1cm] ${isStarStone || isStarStoneMiddle || isShapes ? 'gap-[2.5cm]' : 'gap-[1cm]'}`}>
         <div className="flex items-center justify-center gap-2 shrink-0">
           <button
             type="button"
@@ -2664,7 +2637,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
             </svg>
           </button>
-          <p className={`text-white font-bold text-center drop-shadow ${isShortHeight ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl md:text-4xl'}`}>
+          <p className="text-white text-2xl sm:text-3xl md:text-4xl font-bold text-center drop-shadow">
             {isShapes ? shapesPrompt : isStarStoneMiddle ? "O'rtadagi yulduzni tanla." : isStarStone ? (starStoneHorizontal ? (correctIndex === 0 ? "Toshdan CHAPDA joylashgan yulduzni tanla." : "Toshdan O'NGDA joylashgan yulduzni tanla.") : (correctIndex === 0 ? "Toshdan YUQORIDA joylashgan yulduzni tanla." : "Toshdan QUYIDA joylashgan yulduzni tanla.")) : isWords ? 'Mos keluvchi raqamlar ketma-ketligini tanlang.' : 'Nechta shirinlik bor? Raqamni tanlang.'}
           </p>
         </div>
@@ -2762,7 +2735,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </div>
           )
         ) : isWords ? (
-          <div className={`flex-1 min-h-[180px] sm:min-h-[220px] flex items-center justify-center min-w-0 px-4 relative ${isShortHeight ? 'mt-0' : '-mt-[3.5cm]'}`}>
+          <div className="flex-1 min-h-[180px] sm:min-h-[220px] -mt-[3.5cm] flex items-center justify-center min-w-0 px-4 relative">
             <div className="relative w-full max-w-2xl">
               {/* Ovoz tugmasi — to'rtburchakning yuqori chetida, ortasida, yarmi tashqarida */}
               <button
@@ -2781,9 +2754,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <div className="rounded-3xl bg-white/95 shadow-xl px-6 py-8 sm:px-8 sm:py-10 flex items-center justify-center gap-[calc(0.75rem+0.5rem)] sm:gap-[calc(1rem+0.5rem)] pt-14 sm:pt-16">
                 {(stageConfig as { words: readonly string[] }).words.map((word, i) => (
                   <span key={i} className="flex items-center gap-[calc(0.75rem+0.5rem)] sm:gap-[calc(1rem+0.5rem)]">
-                    <span className={`text-gray-800 font-bold ${isShortHeight ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-4xl md:text-6xl'}`}>{word}</span>
+                    <span className="text-gray-800 font-bold text-2xl sm:text-4xl md:text-6xl">{word}</span>
                     {i < (stageConfig as { words: readonly string[] }).words.length - 1 && (
-                      <span className={`text-purple-600 font-extrabold select-none ${isShortHeight ? 'text-2xl sm:text-3xl' : 'text-4xl sm:text-5xl md:text-6xl'}`} style={{ lineHeight: 1 }}>|</span>
+                      <span className="text-purple-600 font-extrabold text-4xl sm:text-5xl md:text-6xl select-none" style={{ lineHeight: 1 }}>|</span>
                     )}
                   </span>
                 ))}
@@ -2792,12 +2765,12 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </div>
         ) : (
           <div
-            className={`relative flex-1 min-h-[180px] sm:min-h-[220px] overflow-visible bg-no-repeat bg-center bg-contain flex items-center justify-center gap-2 sm:gap-4 min-w-0 ${isShortHeight ? 'mt-0' : '-mt-[2.5cm]'}`}
+            className="relative flex-1 min-h-[180px] sm:min-h-[220px] -mt-[2.5cm] overflow-visible bg-no-repeat bg-center bg-contain flex items-center justify-center gap-2 sm:gap-4 min-w-0"
             style={{ backgroundImage: `url(${ramkaSrc})` }}
           >
             <div
               className="relative w-[45%] min-w-0 max-w-full aspect-[4/3] shrink-0 transition-transform duration-300"
-              style={{ transform: `translateX(${isShortHeight ? '-0.25rem' : '-1cm'}) scale(${stage === 0 ? 1.1 : 0.65})` }}
+              style={{ transform: `translateX(-1cm) scale(${stage === 0 ? 1.1 : 0.65})` }}
             >
               <Image
                 src={sweetsSrc}
@@ -2807,7 +2780,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 unoptimized
               />
             </div>
-            <span className="flex items-center gap-1 shrink-0 text-white font-bold drop-shadow" style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)', transform: isShortHeight ? 'translate(-0.5rem, 0)' : 'translate(-3cm, -1cm)' }}>
+            <span className="flex items-center gap-1 shrink-0 text-white font-bold drop-shadow" style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)', transform: 'translate(-3cm, -1cm)' }}>
               <span>=</span>
               <span>?</span>
             </span>
@@ -2818,8 +2791,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
       {/* Javob tugmalari — 6–10 etapda yo'q (yulduzlar o'zi tugma) */}
       {!isStarStone && !isStarStoneMiddle && !isShapes && (
       <div
-        className={`absolute left-0 right-0 z-10 flex items-center justify-center gap-4 sm:gap-6 px-4 ${isShortHeight ? 'bottom-2 sm:bottom-3' : 'bottom-4 sm:bottom-6'}`}
-        style={{ transform: isWords && isShortHeight ? 'translateY(0)' : (isWords ? 'translateY(-1.5cm)' : 'translateY(0.5cm)') }}
+        className="absolute left-0 right-0 bottom-4 sm:bottom-6 z-10 grid grid-cols-3 items-center justify-center gap-2 sm:gap-4 md:gap-6 px-2 sm:px-4 max-w-2xl mx-auto"
+        style={{ transform: isWords ? 'translateY(-1.5cm)' : 'translateY(0.5cm)' }}
       >
         {answerOptions.map((num, index) => {
           const isWrong = wrongIndices.has(index) || (correctSelected && index !== correctIndex);
@@ -2839,12 +2812,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               type="button"
               onClick={() => handleAnswerClick(index)}
               disabled={isWrong || correctSelected}
-              className={`relative font-bold text-5xl sm:text-6xl md:text-7xl text-blue-900 flex items-center justify-center overflow-hidden bg-no-repeat shadow-lg transition-all duration-300 ${
+              className={`relative font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-blue-900 flex items-center justify-center overflow-hidden bg-no-repeat shadow-lg transition-all duration-300 ${
                 isWords
-                  ? isShortHeight
-                    ? 'w-52 h-36 sm:w-56 sm:h-40 rounded-xl bg-contain bg-center'
-                    : 'w-72 h-48 sm:w-[21rem] sm:h-[13.5rem] md:w-96 md:h-60 rounded-xl bg-contain bg-center'
-                  : 'w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 rounded-full bg-cover bg-center'
+                  ? 'w-full max-w-[8rem] h-24 sm:w-[21rem] sm:h-[13.5rem] md:w-96 md:h-60 rounded-xl bg-contain bg-center aspect-[3/2] sm:aspect-auto'
+                  : 'w-full max-w-[5rem] h-20 sm:w-48 sm:h-48 md:w-60 md:h-60 lg:w-72 lg:h-72 rounded-full bg-cover bg-center aspect-square'
               } ${isWrong ? 'opacity-50 cursor-default' : isCorrectAndSelected ? 'scale-[1.25]' : 'hover:scale-105 active:scale-95'}`}
               style={{ backgroundImage: `url(${knopkaSrc})` }}
             >

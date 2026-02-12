@@ -305,7 +305,7 @@ export default function ReadingRussian1() {
                         Какое слово «{step.word}»?
                       </span>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full">
                       {step.options.map((opt, index) => {
                         const isCorrect = index === step.correctIndex;
                         const isSelectedCorrect = answerSelected === 'correct' && isCorrect;
