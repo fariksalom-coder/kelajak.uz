@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useChildId } from '@/contexts/ChildIdContext';
@@ -83,7 +84,7 @@ export default function ChildMainPage() {
 
   const MATH_COMPLETED_KEY = 'zukko_math1grade_s0_completed';
 
-  const fetchCourses = () => {
+  const fetchCourses = useCallback(() => {
     if (!childId) return;
     fetch(`/api/child/${childId}/courses`)
       .then(async (r) => {
@@ -124,12 +125,12 @@ export default function ChildMainPage() {
       })
       .catch(() => setCourses([]))
       .finally(() => setLoading(false));
-  };
+  }, [childId]);
 
   useEffect(() => {
     if (!childId) return;
     fetchCourses();
-  }, [childId]);
+  }, [childId, fetchCourses]);
 
   if (loading) return <div className="p-4">Loading...</div>;
 
@@ -219,18 +220,22 @@ export default function ChildMainPage() {
         <header className="relative rounded-b-3xl overflow-hidden px-4 pt-6 pb-8 bg-transparent">
           <div className="flex justify-between items-start pointer-events-none">
             {showCharLeft && (
-              <img
+              <Image
                 src="/images/character-left.png"
                 alt=""
+                width={80}
+                height={96}
                 className="w-20 h-24 object-contain opacity-90"
                 onError={() => setShowCharLeft(false)}
               />
             )}
             {!showCharLeft && <div className="w-20" />}
             {showCharRight && (
-              <img
+              <Image
                 src="/images/character-right.png"
                 alt=""
+                width={80}
+                height={96}
                 className="w-20 h-24 object-contain opacity-90"
                 onError={() => setShowCharRight(false)}
               />
@@ -250,18 +255,22 @@ export default function ChildMainPage() {
       <header className="relative rounded-b-3xl overflow-hidden px-4 pt-6 pb-8 bg-transparent">
         <div className="flex justify-between items-start pointer-events-none">
           {showCharLeft && (
-            <img
+            <Image
               src="/images/character-left.png"
               alt=""
+              width={80}
+              height={96}
               className="w-20 h-24 object-contain opacity-90"
               onError={() => setShowCharLeft(false)}
             />
           )}
           {!showCharLeft && <div className="w-20" />}
           {showCharRight && (
-            <img
+            <Image
               src="/images/character-right.png"
               alt=""
+              width={80}
+              height={96}
               className="w-20 h-24 object-contain opacity-90"
               onError={() => setShowCharRight(false)}
             />

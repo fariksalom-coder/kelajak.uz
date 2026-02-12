@@ -385,7 +385,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
-  }, [sayyoraniStage, isSayyoraniFindNumber, sayyoraniFindNumberNumbers]);
+  }, [isSayyoraniFindNumber, sayyoraniFindNumberNumbers]);
   const sayyoraniOptions = sayyoraniData.type === 'squares' ? sayyoraniData.options : [];
   const sayyoraniCorrectIndex =
     sayyoraniData.type === 'squares'
