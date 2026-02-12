@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 
 const HP_PER_STAGE = 10;
@@ -106,7 +106,7 @@ function ShapeButton({
       type="button"
       onClick={() => onAnswer(index)}
       disabled={wrongIndices.has(index) || correctSelected}
-      className={`relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300 bg-blue-900/90 border-2 border-amber-500 shadow-lg ${
+      className={`relative w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300 bg-blue-900/90 border-2 border-amber-500 shadow-lg ${
         isWrong ? 'opacity-50' : isCorrect ? 'scale-110 ring-2 ring-amber-400' : 'hover:scale-105 active:scale-95'
       }`}
     >
@@ -117,7 +117,6 @@ function ShapeButton({
 
 export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, lessonSlug, onComplete, lessonVariant = 'boshlash', block3Task1Stage: block3StageProp, onBlock3Task1StageChange }: TaskScreenProps) {
   const fonSrc = `${imageBaseUrl}/fon.png`;
-  const ramkaSrc = `${imageBaseUrl}/ramka.png`;
   const isTartibBilan = lessonVariant === 'tartib-bilan';
   const isBuyumlarniNext = lessonVariant === 'buyumlarni-next';
   const isBlock3Task1 = lessonVariant === 'block3-task1';
@@ -580,8 +579,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-white drop-shadow mb-6">
                 Tabriklaymiz!
               </p>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-300 drop-shadow mb-10">
-                +{tartibBilanXp}
+              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-sky-300 drop-shadow mb-10">
+                +{tartibBilanXp} ball
               </p>
               <button
                 type="button"
@@ -624,7 +623,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             {Array.from({ length: TARTIB_BILAN_ETAPS }).map((_, i) => (
               <span
                 key={i}
-                className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0"
+                className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0"
                 aria-hidden
               />
             ))}
@@ -857,8 +856,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-white drop-shadow mb-6">
                 Tabriklaymiz!
               </p>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-300 drop-shadow mb-10">
-                +{ALI_UY_XP}
+              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-sky-300 drop-shadow mb-10">
+                +{ALI_UY_XP} ball
               </p>
               <button
                 type="button"
@@ -921,7 +920,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               />
             )}
             {Array.from({ length: ALI_UY_ETAPS }).map((_, i) => (
-              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
+              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0" aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
@@ -1070,7 +1069,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </button>
           <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             {Array.from({ length: 1 }).map((_, i) => (
-              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
+              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0" aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
@@ -1131,8 +1130,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-green-500 drop-shadow mb-6">
                 Tabriklaymiz!
               </p>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-300 drop-shadow mb-10">
-                +{RAQAM_YOZISH_XP}
+              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-sky-300 drop-shadow mb-10">
+                +{RAQAM_YOZISH_XP} ball
               </p>
               <button
                 type="button"
@@ -1218,7 +1217,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 />
               )}
               {Array.from({ length: RAQAM_YOZISH_ETAPS }).map((_, i) => (
-                <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
+                <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0" aria-hidden />
               ))}
             </div>
           ) : (
@@ -1347,7 +1346,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
             <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${(1 / BLOCK4_TASK1_STEPS) * 100}%` }} aria-hidden />
             {Array.from({ length: BLOCK4_TASK1_STEPS }).map((_, i) => (
-              <span key={i} className="relative z-10 w-1.5 h-1.5 rounded-full shrink-0 bg-amber-200 ring-2 ring-white" aria-hidden />
+              <span key={i} className="relative z-10 w-1.5 h-1.5 rounded-full shrink-0 bg-amber-200 ring-2 ring-white opacity-0" aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
@@ -1453,7 +1452,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
             <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Task2Stage + 1) / BLOCK3_TASK2_STEPS) * 100}%` }} aria-hidden />
             {Array.from({ length: BLOCK3_TASK2_STEPS }).map((_, i) => (
-              <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Task2Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 opacity-0 ${i <= block3Task2Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
@@ -1471,7 +1470,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               </div>
               <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 justify-items-center" style={{ marginTop: '2cm' }}>
                 {circleColorsStage0.map((color, i) => (
-                  <div key={i} className={`rounded-full shrink-0 ${color} shadow-md`} style={{ width: '4cm', height: '4cm', maxWidth: 'min(4cm, 18vw)', maxHeight: 'min(4cm, 18vw)' }} aria-hidden />
+                  <div key={i} className={`rounded-full shrink-0 ${color} shadow-md w-14 h-14 sm:w-[3.5cm] sm:h-[3.5cm] md:w-[4cm] md:h-[4cm]`} aria-hidden />
                 ))}
               </div>
               <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 md:gap-5 justify-items-center" style={{ marginTop: '1cm' }}>
@@ -1517,7 +1516,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               </div>
               <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 justify-items-center" style={{ marginTop: '2cm' }}>
                 {circleColorsOrdinal.map((color, i) => (
-                  <div key={i} className={`rounded-full shrink-0 ${color} shadow-md`} style={{ width: '4cm', height: '4cm', maxWidth: 'min(4cm, 18vw)', maxHeight: 'min(4cm, 18vw)' }} aria-hidden />
+                  <div key={i} className={`rounded-full shrink-0 ${color} shadow-md w-14 h-14 sm:w-[3.5cm] sm:h-[3.5cm] md:w-[4cm] md:h-[4cm]`} aria-hidden />
                 ))}
               </div>
               <div className="grid grid-cols-3 justify-center gap-2 sm:gap-4 md:gap-5 justify-items-center" style={{ marginTop: '1cm' }}>
@@ -1674,7 +1673,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
               <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / BLOCK3_TASK1_TOTAL_STAGES) * 100}%` }} aria-hidden />
               {Array.from({ length: BLOCK3_TASK1_TOTAL_STAGES }).map((_, i) => (
-                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 opacity-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
               ))}
             </div>
             <div className="w-10 shrink-0" />
@@ -1782,7 +1781,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
               <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / BLOCK3_TASK1_TOTAL_STAGES) * 100}%` }} aria-hidden />
               {Array.from({ length: BLOCK3_TASK1_TOTAL_STAGES }).map((_, i) => (
-                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 opacity-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
               ))}
             </div>
             <div className="w-10 shrink-0" />
@@ -1869,7 +1868,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
               <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / BLOCK3_TASK1_TOTAL_STAGES) * 100}%` }} aria-hidden />
               {Array.from({ length: BLOCK3_TASK1_TOTAL_STAGES }).map((_, i) => (
-                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 opacity-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
               ))}
             </div>
             <div className="w-10 shrink-0" />
@@ -1945,7 +1944,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / 10) * 100}%` }} aria-hidden />
             {Array.from({ length: 10 }).map((_, i) => (
-              <span key={i} className={`relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              <span key={i} className={`relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 opacity-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
@@ -2056,7 +2055,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </button>
           <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
             {Array.from({ length: 1 }).map((_, i) => (
-              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
+              <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0" aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
@@ -2143,8 +2142,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-white drop-shadow mb-6">
                 Tabriklaymiz!
               </p>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-300 drop-shadow mb-10">
-                +{HP_PER_STAGE * 10}
+              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-sky-300 drop-shadow mb-10">
+                +{HP_PER_STAGE * 10} ball
               </p>
               <button
                 type="button"
@@ -2176,7 +2175,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                   />
                 )}
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-                  <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0" aria-hidden />
+                  <span key={i} className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0" aria-hidden />
                 ))}
               </div>
               <div className="w-10 shrink-0" />
@@ -2251,8 +2250,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-white drop-shadow mb-6">
                 Tabriklaymiz!
               </p>
-              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-300 drop-shadow mb-10">
-                +{sayyoraniXp}
+              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-sky-300 drop-shadow mb-10">
+                +{sayyoraniXp} ball
               </p>
               <button
                 type="button"
@@ -2286,7 +2285,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             {Array.from({ length: SAYYORANI_STAGES.length }).map((_, i) => (
               <span
                 key={i}
-                className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0"
+                className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0"
                 aria-hidden
               />
             ))}
@@ -2307,27 +2306,27 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
               </svg>
             </button>
-            <p className="text-white text-2xl sm:text-3xl md:text-4xl font-bold text-center drop-shadow">
+            <p className={`text-white font-bold text-center drop-shadow text-2xl sm:text-3xl md:text-4xl ${isSayyoraniCountPeople || isSayyoraniChooseTaller ? 'max-sm:text-sm' : ''}`}>
               {isSayyoraniFindNumber || isSayyoraniCountPeople || isSayyoraniChooseTaller || isSayyoraniSortOrder ? sayyoraniData.label : 'Tushirib qoldirilgan sonni tanlang'}
             </p>
           </div>
           {sayyoraniData.type === 'squares' && (
             <>
-              {/* 5 ta kvadrat */}
-              <div className="flex items-center justify-center gap-3 sm:gap-4 shrink-0">
+              {/* 5 ta kvadrat — mobil: balandligi raqamga mos (faqat kontent, fixed size yo'q) */}
+              <div className="flex items-center justify-center gap-2 sm:gap-4 shrink-0">
                 {sayyoraniData.squares.map((val, i) => (
                   <div
                     key={i}
-                    className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl bg-amber-100 border-2 border-amber-600 flex items-center justify-center shadow-xl"
+                    className="max-sm:min-w-0 max-sm:w-auto max-sm:h-auto max-sm:py-2 max-sm:px-3 w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl bg-amber-100 border-2 border-amber-600 flex items-center justify-center shadow-xl"
                   >
-                    <span className={`text-4xl sm:text-5xl md:text-6xl font-bold ${val === '?' ? 'text-sky-600' : 'text-amber-900'}`}>
+                    <span className={`max-sm:text-2xl text-4xl sm:text-5xl md:text-6xl font-bold ${val === '?' ? 'text-sky-600' : 'text-amber-900'}`}>
                       {val}
                     </span>
                   </div>
                 ))}
               </div>
-              {/* 3 ta yumaloq javob */}
-              <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap shrink-0">
+              {/* 3 ta yumaloq javob — mobil: kichikroq */}
+              <div className="flex items-center justify-center gap-4 sm:gap-8 flex-wrap shrink-0">
                 {sayyoraniOptions.map((num, index) => {
                   const isWrong = wrongIndices.has(index) || (correctSelected && index !== sayyoraniCorrectIndex);
                   const isCorrect = correctSelected && index === sayyoraniCorrectIndex;
@@ -2337,7 +2336,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                       type="button"
                       onClick={() => handleSayyoraniAnswer(index)}
                       disabled={wrongIndices.has(index) || correctSelected}
-                      className={`w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full font-bold text-4xl sm:text-5xl md:text-6xl text-sky-900 bg-sky-100 border-2 border-sky-600 shadow-lg transition-all duration-300 ${
+                      className={`max-sm:w-14 max-sm:h-14 max-sm:text-2xl w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full font-bold text-4xl sm:text-5xl md:text-6xl text-sky-900 bg-sky-100 border-2 border-sky-600 shadow-lg transition-all duration-300 flex items-center justify-center ${
                         isWrong ? 'opacity-50 cursor-default' : isCorrect ? 'scale-110 ring-2 ring-green-500' : 'hover:scale-105 active:scale-95'
                       }`}
                     >
@@ -2349,30 +2348,22 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </>
           )}
           {sayyoraniData.type === 'findNumber' && sayyoraniFindNumberOrder.length > 0 && (
-            <div className="relative flex-1 min-h-[12rem] w-full max-w-2xl mx-auto">
-              <div className="absolute inset-0 grid grid-cols-2 gap-4 sm:gap-6 place-items-center" style={{ gridTemplateAreas: '"a b" "c d"' }}>
+            <div className="relative flex-1 min-h-0 w-full max-w-2xl mx-auto flex items-center justify-center max-sm:py-2">
+              <div className="grid grid-cols-2 gap-2 sm:gap-6 place-items-center max-sm:max-w-[min(18rem,100%)]">
                 {sayyoraniFindNumberOrder.map((num, index) => {
                   const isWrong = wrongIndices.has(index) || (correctSelected && index !== sayyoraniCorrectIndex);
                   const isCorrect = correctSelected && index === sayyoraniCorrectIndex;
-                  const positions: { gridArea: string; transform?: string }[] = [
-                    { gridArea: 'a', transform: 'translate(-10%, -5%)' },
-                    { gridArea: 'b', transform: 'translate(15%, 10%)' },
-                    { gridArea: 'c', transform: 'translate(5%, -10%)' },
-                    { gridArea: 'd', transform: 'translate(-15%, 5%)' },
-                  ];
-                  const pos = positions[index];
                   return (
                     <button
                       key={`${num}-${index}`}
                       type="button"
                       onClick={() => handleSayyoraniAnswer(index)}
                       disabled={wrongIndices.has(index) || correctSelected}
-                      className={`w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-xl bg-transparent border-none flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+                      className={`max-sm:w-32 max-sm:h-32 w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-xl bg-transparent border-none flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
                         isWrong ? 'opacity-50 cursor-default' : isCorrect ? 'scale-110 ring-2 ring-green-500' : 'hover:scale-105 active:scale-95'
                       }`}
-                      style={{ gridArea: pos.gridArea, transform: pos.transform }}
                     >
-                      <Image src={`${imageBaseUrl}/${num}.svg`} alt={`${num}`} width={80} height={80} className="w-full h-full object-contain p-1" />
+                      <Image src={`${imageBaseUrl}/${num}.svg`} alt={`${num}`} width={80} height={80} className="w-full h-full object-contain p-0.5 sm:p-1" />
                     </button>
                   );
                 })}
@@ -2381,9 +2372,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           )}
           {sayyoraniData.type === 'countPeople' && (
             <>
-              <div className="flex items-center justify-center gap-3 sm:gap-4 shrink-0 flex-wrap">
+              {/* Mobil: 4 ta hero 2x katta, oraliq kam (shaffof fon), bitta ekranda */}
+              <div className="flex items-center justify-center max-sm:gap-0 max-sm:[&>div+div]:-ml-28 gap-2 sm:gap-4 shrink-0 max-sm:flex-nowrap max-sm:overflow-x-auto flex-wrap">
                 {sayyoraniData.heroes.map((name) => (
-                  <div key={name} className="w-28 h-32 sm:w-40 sm:h-48 md:w-48 md:h-56 rounded-xl overflow-hidden flex-shrink-0 bg-transparent">
+                  <div key={name} className="max-sm:w-[10rem] max-sm:h-[12rem] w-28 h-32 sm:w-40 sm:h-48 md:w-48 md:h-56 rounded-xl overflow-visible flex-shrink-0 bg-transparent">
                     <Image
                       src={`${imageBaseUrl}/${name}.png`}
                       alt={name}
@@ -2394,7 +2386,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                   </div>
                 ))}
               </div>
-              <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap shrink-0">
+              {/* Mobil: javoblar (1–5) bitta qatorda */}
+              <div className="flex items-center justify-center gap-1 sm:gap-3 max-sm:flex-nowrap flex-wrap shrink-0">
                 {[1, 2, 3, 4, 5].map((num, index) => {
                   const isWrong = wrongIndices.has(index) || (correctSelected && index !== sayyoraniCorrectIndex);
                   const isCorrect = correctSelected && index === sayyoraniCorrectIndex;
@@ -2404,7 +2397,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                       type="button"
                       onClick={() => handleSayyoraniAnswer(index)}
                       disabled={wrongIndices.has(index) || correctSelected}
-                      className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl font-bold text-2xl sm:text-3xl text-sky-900 bg-amber-100 border-2 border-amber-600 flex items-center justify-center shadow-lg transition-all duration-300 ${
+                      className={`max-sm:w-11 max-sm:h-11 max-sm:text-lg w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl font-bold text-2xl sm:text-3xl text-sky-900 bg-amber-100 border-2 border-amber-600 flex items-center justify-center shadow-lg transition-all duration-300 flex-shrink-0 ${
                         isWrong ? 'opacity-50 cursor-default' : isCorrect ? 'scale-110 ring-2 ring-green-500' : 'hover:scale-105 active:scale-95'
                       }`}
                     >
@@ -2416,7 +2409,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </>
           )}
           {sayyoraniData.type === 'chooseTaller' && (
-            <div className="flex items-end justify-center gap-4 sm:gap-6 shrink-0 flex-wrap">
+            /* Mobil: 3 ta hero 2x katta, oraliq kam (shaffof fon), bitta ekranda */
+            <div className="flex items-end justify-center max-sm:gap-0 max-sm:[&>button+button]:-ml-12 gap-4 sm:gap-6 shrink-0 max-sm:flex-nowrap flex-wrap">
               {sayyoraniData.heroes.map((name, index) => {
                 const isWrong = wrongIndices.has(index) || (correctSelected && index !== sayyoraniCorrectIndex);
                 const isCorrect = correctSelected && index === sayyoraniCorrectIndex;
@@ -2427,9 +2421,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                     type="button"
                     onClick={() => handleSayyoraniAnswer(index)}
                     disabled={wrongIndices.has(index) || correctSelected}
-                    className={`rounded-xl overflow-hidden flex-shrink-0 bg-transparent border-none transition-all duration-300 ${
+                    className={`rounded-xl overflow-visible flex-shrink-0 bg-transparent border-none transition-all duration-300 ${
                       isWrong ? 'opacity-50 cursor-default' : isCorrect ? 'ring-2 ring-green-500' : 'hover:scale-105 active:scale-95'
-                    } ${isTall ? 'w-[12.6rem] h-[16.2rem] sm:w-[16.2rem] sm:h-[19.8rem] md:w-[18rem] md:h-[21.6rem]' : 'w-[10.5rem] h-[13.5rem] sm:w-[13.5rem] sm:h-[16.5rem] md:w-[15rem] md:h-[18rem]'}`}
+                    } ${isTall ? 'max-sm:w-[10rem] max-sm:h-[14rem] w-[12.6rem] h-[16.2rem] sm:w-[16.2rem] sm:h-[19.8rem] md:w-[18rem] md:h-[21.6rem]' : 'max-sm:w-[8rem] max-sm:h-[11rem] w-[10.5rem] h-[13.5rem] sm:w-[13.5rem] sm:h-[16.5rem] md:w-[15rem] md:h-[18rem]'}`}
                   >
                     <Image
                       src={`${imageBaseUrl}/${name}.png`}
@@ -2467,7 +2461,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                       tabIndex={0}
                       onClick={() => handleSortSlotClick(slotIndex)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSortSlotClick(slotIndex); } }}
-                      className={`h-40 sm:h-48 md:h-56 w-auto min-w-[4rem] flex-shrink-0 flex items-center justify-center select-none rounded-none overflow-visible
+                      className={`max-sm:h-[5.4rem] h-40 sm:h-48 md:h-56 w-auto min-w-[4rem] flex-shrink-0 flex items-center justify-center select-none rounded-none overflow-visible
                         ${sortSelectedSlot === slotIndex ? 'ring-2 ring-amber-400 ring-inset' : ''}
                         cursor-pointer ${correctSelected ? 'cursor-default' : ''}`}
                     >
@@ -2544,21 +2538,23 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
     }
   };
 
+  const CORRECT_NOTIFICATION_MS = 500;
+
   const handleAnswerClick = (index: number) => {
     if (index === correctIndex) {
       setCorrectSelected(true);
       playCorrectAudio();
       const isLastStage = stage === STAGES.length - 1;
-      if (isLastStage) {
-        setCompletedSteps((s) => s + 1);
-        return;
-      }
       setTimeout(() => {
-        setStage((s) => s + 1);
-        setWrongIndices(new Set());
         setCorrectSelected(false);
-        setCompletedSteps((s) => s + 1);
-      }, 500);
+        if (isLastStage) {
+          setCompletedSteps((s) => s + 1);
+        } else {
+          setStage((s) => s + 1);
+          setWrongIndices(new Set());
+          setCompletedSteps((s) => s + 1);
+        }
+      }, CORRECT_NOTIFICATION_MS);
       return;
     }
     setWrongIndices((prev) => new Set(prev).add(index));
@@ -2577,8 +2573,8 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-white drop-shadow mb-6">
               Tabriklaymiz!
             </p>
-            <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-300 drop-shadow mb-10">
-              +{totalXp}
+              <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-sky-300 drop-shadow mb-10">
+                +{totalXp} ball
             </p>
             <button
               type="button"
@@ -2614,7 +2610,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           {Array.from({ length: STAGES.length }).map((_, i) => (
             <span
               key={i}
-              className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0"
+              className="relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white/70 shrink-0 opacity-0"
               aria-hidden
             />
           ))}
@@ -2622,8 +2618,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         <div className="w-10 shrink-0" />
       </header>
 
-      {/* Matn va ramka: matn va yulduz/tosh bloklari aralashmasin */}
-      <div className={`absolute left-0 right-0 top-14 sm:top-16 bottom-20 sm:bottom-24 z-10 flex flex-col px-4 pt-[1cm] ${isStarStone || isStarStoneMiddle || isShapes ? 'gap-[2.5cm]' : 'gap-[1cm]'}`}>
+      {/* Matn va ramka; star/stone/shapes: overflow-visible (mobil) — pastki element kesilmasin va ustiga shaffof qatlam tushmasin */}
+      {/* Mobil: matn va variantlar yuqorida — pt kamroq, gap kamroq; max-sm:bottom-20 — javoblar to'liq ko'rinsin */}
+      <div className={`absolute left-0 right-0 top-14 sm:top-16 max-sm:bottom-20 sm:bottom-24 z-10 flex flex-col px-4 pt-[1cm] max-sm:pt-[0.6cm] ${isStarStone || isStarStoneMiddle || isShapes ? 'overflow-visible' : 'overflow-hidden'} ${isStarStone || isStarStoneMiddle || isShapes ? 'gap-[2.5cm] max-sm:gap-[1.25cm]' : 'gap-[1cm] max-sm:gap-[0.5cm]'}`}>
+        {/* Mobil: matn process bar ostiga chiqmasin — translate-y ishlatilmaydi */}
         <div className="flex items-center justify-center gap-2 shrink-0">
           <button
             type="button"
@@ -2637,14 +2635,14 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
             </svg>
           </button>
-          <p className="text-white text-2xl sm:text-3xl md:text-4xl font-bold text-center drop-shadow">
+          <p className={`text-white font-bold text-center drop-shadow sm:text-3xl md:text-4xl ${isStarStone ? 'max-sm:text-sm' : 'text-lg'}`}>
             {isShapes ? shapesPrompt : isStarStoneMiddle ? "O'rtadagi yulduzni tanla." : isStarStone ? (starStoneHorizontal ? (correctIndex === 0 ? "Toshdan CHAPDA joylashgan yulduzni tanla." : "Toshdan O'NGDA joylashgan yulduzni tanla.") : (correctIndex === 0 ? "Toshdan YUQORIDA joylashgan yulduzni tanla." : "Toshdan QUYIDA joylashgan yulduzni tanla.")) : isWords ? 'Mos keluvchi raqamlar ketma-ketligini tanlang.' : 'Nechta shirinlik bor? Raqamni tanlang.'}
           </p>
         </div>
         {/* 6–10: yulduz/tosh. 11-etap: 4 geometrik figura — kvadratni tanlang */}
         {isShapes ? (
-          <div className="flex-1 min-h-[260px] sm:min-h-[300px] flex items-center justify-center min-w-0 px-4">
-            <div className="grid grid-cols-3 grid-rows-3 gap-3 sm:gap-4 place-items-center w-[280px] sm:w-[320px] md:w-[360px]">
+          <div className="flex-1 min-h-[260px] sm:min-h-[300px] flex items-center justify-center min-w-0 px-4 max-sm:min-h-0">
+            <div className="relative z-10 grid grid-cols-3 grid-rows-3 gap-2 sm:gap-3 md:gap-4 place-items-center w-[200px] sm:w-[280px] md:w-[320px] lg:w-[360px]">
               {/* top */}
               <div className="col-start-2 row-start-1">
                 <ShapeButton index={0} correctIndex={correctIndex} wrongIndices={wrongIndices} correctSelected={correctSelected} onAnswer={handleAnswerClick} shape={shapesOrder[0]} />
@@ -2672,71 +2670,71 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               type="button"
               onClick={() => handleAnswerClick(0)}
               disabled={wrongIndices.has(0) || correctSelected}
-              className={`relative z-10 w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
+              className={`relative z-10 w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
             >
               <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
             </button>
-            <div className="relative z-0 w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 shrink-0 overflow-visible scale-[2.5] origin-center">
+            <div className="relative z-0 w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0 overflow-visible scale-[2.5] origin-center">
               <Image src={stoneSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 8rem, 9rem" />
             </div>
             <button
               type="button"
               onClick={() => handleAnswerClick(1)}
               disabled={wrongIndices.has(1) || correctSelected}
-              className={`relative z-10 w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
+              className={`relative z-10 w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
             >
               <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
             </button>
           </div>
         ) : isStarStone ? (
           starStoneHorizontal ? (
-            <div className={`flex-1 min-h-[180px] sm:min-h-[220px] flex flex-row items-center justify-center min-w-0 px-4 ${starStoneWideGap ? 'gap-[3cm]' : 'gap-4 sm:gap-6'}`}>
+            <div className={`flex-1 min-h-0 sm:min-h-[220px] flex flex-row items-center justify-center min-w-0 px-2 sm:px-4 ${starStoneWideGap ? 'gap-4 sm:gap-[3cm]' : 'gap-2 sm:gap-6'}`}>
               <button
                 type="button"
                 onClick={() => handleAnswerClick(0)}
                 disabled={wrongIndices.has(0) || correctSelected}
-                className={`relative z-10 w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
+                className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
                 <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
               </button>
-              <div className="relative z-0 w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 shrink-0 overflow-visible scale-[3] origin-center">
+              <div className="relative z-0 w-16 h-16 sm:w-28 sm:h-28 md:w-36 md:h-36 shrink-0 overflow-visible scale-[2] sm:scale-[3] origin-center">
                 <Image src={stoneSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
               </div>
               <button
                 type="button"
                 onClick={() => handleAnswerClick(1)}
                 disabled={wrongIndices.has(1) || correctSelected}
-                className={`relative z-10 w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
+                className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
                 <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
               </button>
             </div>
           ) : (
-            <div className="flex-1 min-h-[180px] sm:min-h-[220px] flex flex-col items-center justify-center gap-4 sm:gap-6 min-w-0 px-4">
+            <div className="flex-1 min-h-0 sm:min-h-[220px] flex flex-col items-center justify-center gap-2 sm:gap-6 min-w-0 px-4 max-sm:py-2">
               <button
                 type="button"
                 onClick={() => handleAnswerClick(0)}
                 disabled={wrongIndices.has(0) || correctSelected}
-                className={`relative z-10 w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
+                className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
                 <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
               </button>
-              <div className="relative z-0 w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 shrink-0 overflow-visible scale-[3] origin-center">
+              <div className="relative z-0 w-16 h-16 sm:w-28 sm:h-28 md:w-36 md:h-36 shrink-0 overflow-visible scale-[2] sm:scale-[3] origin-center">
                 <Image src={stoneSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
               </div>
               <button
                 type="button"
                 onClick={() => handleAnswerClick(1)}
                 disabled={wrongIndices.has(1) || correctSelected}
-                className={`relative z-10 w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
+                className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
                 <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
               </button>
             </div>
           )
         ) : isWords ? (
-          <div className="flex-1 min-h-[180px] sm:min-h-[220px] -mt-[3.5cm] flex items-center justify-center min-w-0 px-4 relative">
-            <div className="relative w-full max-w-2xl">
+          <div className="flex-1 min-h-[180px] sm:min-h-[220px] -mt-[3.5cm] max-sm:translate-y-[1cm] flex items-center justify-center min-w-0 px-2 sm:px-4 relative overflow-hidden">
+            <div className="relative w-full max-w-2xl max-sm:max-w-full min-w-0">
               {/* Ovoz tugmasi — to'rtburchakning yuqori chetida, ortasida, yarmi tashqarida */}
               <button
                 type="button"
@@ -2751,12 +2749,12 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                   <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
                 </svg>
               </button>
-              <div className="rounded-3xl bg-white/95 shadow-xl px-6 py-8 sm:px-8 sm:py-10 flex items-center justify-center gap-[calc(0.75rem+0.5rem)] sm:gap-[calc(1rem+0.5rem)] pt-14 sm:pt-16">
+              <div className="rounded-3xl bg-white/95 shadow-xl px-3 py-4 sm:px-8 sm:py-10 flex items-center justify-center gap-2 sm:gap-[calc(1rem+0.5rem)] pt-14 sm:pt-16 max-sm:min-w-0 max-sm:max-w-full">
                 {(stageConfig as { words: readonly string[] }).words.map((word, i) => (
-                  <span key={i} className="flex items-center gap-[calc(0.75rem+0.5rem)] sm:gap-[calc(1rem+0.5rem)]">
-                    <span className="text-gray-800 font-bold text-2xl sm:text-4xl md:text-6xl">{word}</span>
+                  <span key={i} className="flex items-center gap-2 sm:gap-[calc(1rem+0.5rem)] shrink-0">
+                    <span className="text-gray-800 font-bold text-lg sm:text-4xl md:text-6xl">{word}</span>
                     {i < (stageConfig as { words: readonly string[] }).words.length - 1 && (
-                      <span className="text-purple-600 font-extrabold text-4xl sm:text-5xl md:text-6xl select-none" style={{ lineHeight: 1 }}>|</span>
+                      <span className="text-purple-600 font-extrabold text-xl sm:text-5xl md:text-6xl select-none" style={{ lineHeight: 1 }}>|</span>
                     )}
                   </span>
                 ))}
@@ -2765,12 +2763,11 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </div>
         ) : (
           <div
-            className="relative flex-1 min-h-[180px] sm:min-h-[220px] -mt-[2.5cm] overflow-visible bg-no-repeat bg-center bg-contain flex items-center justify-center gap-2 sm:gap-4 min-w-0"
-            style={{ backgroundImage: `url(${ramkaSrc})` }}
+            className="relative flex-1 min-h-[180px] sm:min-h-[220px] -mt-[2.5cm] overflow-visible flex items-center justify-center gap-2 sm:gap-4 min-w-0"
           >
             <div
-              className="relative w-[45%] min-w-0 max-w-full aspect-[4/3] shrink-0 transition-transform duration-300"
-              style={{ transform: `translateX(-1cm) scale(${stage === 0 ? 1.1 : 0.65})` }}
+              className="relative w-[70%] min-w-0 max-w-full aspect-[4/3] shrink-0 transition-transform duration-300 sm:w-[45%] mx-auto"
+              style={{ transform: `scale(${stage === 0 ? 1.1 : 0.65})` }}
             >
               <Image
                 src={sweetsSrc}
@@ -2780,19 +2777,19 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 unoptimized
               />
             </div>
-            <span className="flex items-center gap-1 shrink-0 text-white font-bold drop-shadow" style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)', transform: 'translate(-3cm, -1cm)' }}>
-              <span>=</span>
-              <span>?</span>
-            </span>
           </div>
         )}
       </div>
 
-      {/* Javob tugmalari — 6–10 etapda yo'q (yulduzlar o'zi tugma) */}
+      {/* Javob tugmalari — 1-etap: to‘g‘ri burchakli tugma (raqam), qolgan etaplar: rasm yoki knopka */}
+      {!isStarStone && !isStarStoneMiddle && !isShapes && correctSelected && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] px-6 py-3 rounded-2xl bg-green-500/95 text-white font-bold text-xl shadow-lg animate-fade-in" role="alert">
+          To&apos;g&apos;ri!
+        </div>
+      )}
       {!isStarStone && !isStarStoneMiddle && !isShapes && (
       <div
-        className="absolute left-0 right-0 bottom-4 sm:bottom-6 z-10 grid grid-cols-3 items-center justify-center gap-2 sm:gap-4 md:gap-6 px-2 sm:px-4 max-w-2xl mx-auto"
-        style={{ transform: isWords ? 'translateY(-1.5cm)' : 'translateY(0.5cm)' }}
+        className={`absolute left-0 right-0 max-sm:bottom-14 sm:bottom-6 z-10 grid grid-cols-3 items-center justify-center gap-3 sm:gap-4 md:gap-6 px-3 sm:px-4 max-w-2xl mx-auto ${isWords ? 'max-sm:translate-y-[-0.5cm] sm:translate-y-[-3.5cm]' : 'max-sm:translate-y-0 sm:translate-y-[-1.5cm]'}`}
       >
         {answerOptions.map((num, index) => {
           const isWrong = wrongIndices.has(index) || (correctSelected && index !== correctIndex);
@@ -2806,27 +2803,41 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 : wrongTriplesStage3[wrongIndicesOrdered.indexOf(index)]
             : null;
           const buttonLabel = !isWords ? String(num) : null;
+          const plainButton = !isWords;
+          const wordsButton = isWords;
           return (
             <button
               key={index}
               type="button"
               onClick={() => handleAnswerClick(index)}
               disabled={isWrong || correctSelected}
-              className={`relative font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-blue-900 flex items-center justify-center overflow-hidden bg-no-repeat shadow-lg transition-all duration-300 ${
-                isWords
-                  ? 'w-full max-w-[8rem] h-24 sm:w-[21rem] sm:h-[13.5rem] md:w-96 md:h-60 rounded-xl bg-contain bg-center aspect-[3/2] sm:aspect-auto'
-                  : 'w-full max-w-[5rem] h-20 sm:w-48 sm:h-48 md:w-60 md:h-60 lg:w-72 lg:h-72 rounded-full bg-cover bg-center aspect-square'
-              } ${isWrong ? 'opacity-50 cursor-default' : isCorrectAndSelected ? 'scale-[1.25]' : 'hover:scale-105 active:scale-95'}`}
-              style={{ backgroundImage: `url(${knopkaSrc})` }}
+              className={
+                plainButton
+                  ? `w-full max-w-[7rem] sm:max-w-none min-h-0 py-3 sm:py-4 md:py-5 px-3 rounded-2xl font-bold text-4xl sm:text-5xl md:text-6xl flex items-center justify-center shadow-lg transition-all duration-300 border-2 ${
+                      isWrong ? 'opacity-50 cursor-default bg-gray-200 border-gray-300 text-blue-900' : isCorrectAndSelected ? 'scale-[1.08] bg-gradient-to-b from-green-500 to-green-600 border-green-700 text-white shadow-green-500/30' : 'bg-white border-sky-300 text-blue-900 hover:border-sky-500 hover:bg-sky-50 active:scale-95'
+                    }`
+                  : wordsButton
+                    ? `w-full max-w-[4.5rem] sm:max-w-none min-h-0 py-2 sm:py-6 md:py-8 px-1 sm:px-4 rounded-xl sm:rounded-2xl font-bold text-xl sm:text-5xl md:text-6xl text-blue-900 flex items-center justify-center shadow-lg transition-all duration-300 border-2 ${
+                        isWrong ? 'opacity-50 cursor-default bg-gray-200 border-gray-300' : isCorrectAndSelected ? 'scale-[1.08] bg-gradient-to-b from-green-500 to-green-600 border-green-700 text-white shadow-green-500/30' : 'bg-white border-sky-300 hover:border-sky-500 hover:bg-sky-50 active:scale-95'
+                      }`
+                    : ''
+              }
             >
-              {isWords && threeNumbers ? (
-                <span className="relative z-10 drop-shadow-sm flex w-full justify-evenly px-4" style={{ transform: 'translateY(calc(-0.5rem - 0.5cm + 10px))' }}>
+              {plainButton ? (
+                <span className="block text-center">{buttonLabel}</span>
+              ) : wordsButton && threeNumbers ? (
+                <span className="flex items-center justify-center flex-nowrap gap-x-0 text-[1.05em] sm:text-[1em]">
                   {threeNumbers.map((n, i) => (
-                    <span key={i}>{n}</span>
+                    <Fragment key={i}>
+                      {i > 0 && (
+                        <span className="inline-block w-px min-h-[1em] sm:min-h-[1.2em] bg-current opacity-60 mx-0.5 sm:mx-2 rounded-full shrink-0" aria-hidden />
+                      )}
+                      <span>{n}</span>
+                    </Fragment>
                   ))}
                 </span>
               ) : (
-                <span className="relative z-10 drop-shadow-sm" style={{ transform: 'translateY(calc(-0.5rem - 0.5cm + 10px))' }}>{buttonLabel}</span>
+                <span className="block text-center">{buttonLabel}</span>
               )}
             </button>
           );

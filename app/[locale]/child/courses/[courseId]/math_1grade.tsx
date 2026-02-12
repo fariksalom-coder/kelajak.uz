@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
 import TaskScreen from '@/components/lesson/TaskScreen';
@@ -12,7 +12,14 @@ import { useLocale } from 'next-intl';
 import { MATH_TAB0_SECTIONS } from './math-1grade-data/sections-tab0';
 import { MATH_TAB1_SECTIONS } from './math-1grade-data/sections-tab1';
 import { MATH_TAB5_SECTIONS } from './math-1grade-data/sections-tab5';
-import type { LessonStatus } from './math-1grade-data/types';
+import type { LessonStatus, SectionData } from './math-1grade-data/types';
+
+function getSectionsByTab(tab: number): SectionData[] | null {
+  if (tab === 0) return MATH_TAB0_SECTIONS;
+  if (tab === 1) return MATH_TAB1_SECTIONS;
+  if (tab === 4) return MATH_TAB5_SECTIONS;
+  return null;
+}
 
 /** Bo‘lim va qism indeksiga qarab rasm papkasi (public/courses/math-1grade/...). */
 function getTaskImageBaseUrl(tabIndex: number, sectionIdx: number): string {
@@ -175,6 +182,7 @@ function getBlock4LessonStatus(lessonIdx: number, completedLessons: Set<string>)
 
 export default function CourseDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const courseId = params.courseId as string;
   const childId = useChildId();
@@ -191,10 +199,37 @@ export default function CourseDetailPage() {
   const asChild = searchParams.get('asChild');
   const linkSuffix = asChild ? `?asChild=${asChild}` : '';
 
-  const openLesson = (sectionIdx: number, lessonIdx: number, lessonLabel: string, subsectionTitle?: string) => {
-    setSelectedLesson({ tabIndex: activeTab, sectionIdx, lessonIdx, lessonLabel, subsectionTitle });
-    setLessonScreen('start');
+  // Open task in new tab: build URL and open in _blank
+  const openTaskInNewTab = (sectionIdx: number, lessonIdx: number) => {
+    const taskUrl = `/${locale}/child/courses/${courseId}?tab=${activeTab}&section=${sectionIdx}&lesson=${lessonIdx}${asChild ? `&asChild=${asChild}` : ''}`;
+    window.open(taskUrl, '_blank');
   };
+
+  // Initialize selectedLesson and activeTab from URL when page loads with tab, section, lesson params (e.g. new tab)
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    const sectionParam = searchParams.get('section');
+    const lessonParam = searchParams.get('lesson');
+    if (tabParam == null || sectionParam == null || lessonParam == null) return;
+    const tab = parseInt(tabParam, 10);
+    const sectionIdx = parseInt(sectionParam, 10);
+    const lessonIdx = parseInt(lessonParam, 10);
+    if (Number.isNaN(tab) || Number.isNaN(sectionIdx) || Number.isNaN(lessonIdx)) return;
+    const sections = getSectionsByTab(tab);
+    if (!sections || sectionIdx < 0 || sectionIdx >= sections.length) return;
+    const section = sections[sectionIdx];
+    if (!section.lessons.length || lessonIdx < 0 || lessonIdx >= section.lessons.length) return;
+    const lesson = section.lessons[lessonIdx];
+    setActiveTab(tab);
+    setSelectedLesson({
+      tabIndex: tab,
+      sectionIdx,
+      lessonIdx,
+      lessonLabel: lesson.label,
+      subsectionTitle: section.subsectionTitle,
+    });
+    setLessonScreen('start');
+  }, [searchParams]);
 
   // Block 3 task 1: yangi dars ochilganda etapni 0 qilamiz
   useEffect(() => {
@@ -202,7 +237,16 @@ export default function CourseDetailPage() {
   }, [selectedLesson]);
 
   const closeLesson = () => {
+    if (typeof window !== 'undefined' && window.opener != null) {
+      window.close();
+      return;
+    }
     setSelectedLesson(null);
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.replace(`/${locale}/child/courses/${courseId}${linkSuffix}`);
+    }
   };
 
   // Boshlang‘ich oynada audio — boshlash tugmasiga qadar davom etadi
@@ -373,9 +417,9 @@ export default function CourseDetailPage() {
                             key={i}
                             role={canOpen ? 'button' : undefined}
                             tabIndex={canOpen ? 0 : undefined}
-                            onClick={canOpen ? () => openLesson(sectionIdx, i, lesson.label, section.subsectionTitle) : undefined}
-                            onKeyDown={canOpen ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLesson(sectionIdx, i, lesson.label, section.subsectionTitle); } } : undefined}
-                            className={`flex-shrink-0 w-[200px] ${canOpen ? 'cursor-pointer' : ''}`}
+                            onClick={canOpen ? () => openTaskInNewTab(sectionIdx, i) : undefined}
+                            onKeyDown={canOpen ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openTaskInNewTab(sectionIdx, i); } } : undefined}
+                            className={`flex-shrink-0 w-[120px] sm:w-[200px] ${canOpen ? 'cursor-pointer' : ''}`}
                           >
                             <div
                               className={`relative aspect-square rounded-xl border-2 flex flex-col items-center justify-center bg-white overflow-hidden ${
@@ -408,11 +452,11 @@ export default function CourseDetailPage() {
                               )}
                               <div className="relative w-full flex-1 min-h-0 flex items-center justify-center p-2">
                                 <div className="w-full h-full rounded-lg bg-gray-100 flex items-center justify-center">
-                                  <span className="text-4xl font-bold text-gray-500">{i + 1}</span>
+                                  <span className="text-2xl sm:text-4xl font-bold text-gray-500">{i + 1}</span>
                                 </div>
                               </div>
                             </div>
-                            <p className="text-sm text-gray-700 mt-2 text-center leading-tight font-medium">
+                            <p className="text-xs sm:text-sm text-gray-700 mt-2 text-center leading-tight font-medium">
                               {lesson.label}
                             </p>
                           </div>
@@ -456,7 +500,7 @@ export default function CourseDetailPage() {
                 backgroundImage: `url(${getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx)}/${activeTab === 0 && selectedLesson.sectionIdx === 3 ? 'fon_blok4.png' : activeTab === 0 && (selectedLesson.sectionIdx === 1 || selectedLesson.sectionIdx === 2) ? 'fon4.png' : 'fon.png'})`,
               }}
             >
-              <div className="flex-1 min-h-0 flex flex-col max-sm:scale-90 max-sm:origin-top overflow-auto">
+              <div className="flex-1 min-h-0 flex flex-col overflow-auto">
               {lessonScreen === 'start' && (
                 <div className="flex-1 min-h-0 flex flex-col items-center justify-center relative p-4 sm:p-6 overflow-y-auto">
                   {activeTab === 0 && (selectedLesson.sectionIdx === 2 || selectedLesson.sectionIdx === 3) ? null : (

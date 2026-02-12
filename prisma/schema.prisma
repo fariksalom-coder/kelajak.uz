@@ -29,10 +29,11 @@ model User {
   childrenAsParent ChildParent[] @relation("Parent")
   parents          ChildParent[] @relation("Child")
 
-  userCourses   UserCourse[]
-  topicFeedback TopicFeedback[]  @relation("ChildFeedback")
-  parentFeedback TopicFeedback[]  @relation("ParentFeedback")
-  activityLogs   ActivityLog[]
+  userCourses       UserCourse[]
+  lessonCompletions LessonCompletion[]
+  topicFeedback     TopicFeedback[]  @relation("ChildFeedback")
+  parentFeedback    TopicFeedback[]  @relation("ParentFeedback")
+  activityLogs      ActivityLog[]
 
   @@map("users")
 }
@@ -71,6 +72,17 @@ model UserCourse {
 
   @@unique([userId, courseId])
   @@map("user_courses")
+}
+
+model LessonCompletion {
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
+  lessonSlug String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId, lessonSlug])
+  @@map("lesson_completions")
 }
 
 model Subject {

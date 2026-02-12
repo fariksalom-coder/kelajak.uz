@@ -37,10 +37,33 @@ export async function POST(
     return NextResponse.json({ error: 'Bad request' }, { status: 400 });
   }
 
+  // Баллы начисляются только при первом прохождении задания
+  const existing = await prisma.lessonCompletion.findUnique({
+    where: {
+      userId_courseId_lessonSlug: { userId: childId, courseId, lessonSlug },
+    },
+  });
+  if (existing) {
+    const [user, userCourse] = await Promise.all([
+      prisma.user.findUnique({ where: { id: childId }, select: { points: true } }),
+      prisma.userCourse.findUnique({
+        where: { userId_courseId: { userId: childId, courseId } },
+        select: { progress: true },
+      }),
+    ]);
+    return NextResponse.json({
+      ok: true,
+      points: user?.points ?? 0,
+      courseId,
+      courseProgress: userCourse?.progress ?? 0,
+      alreadyCompleted: true,
+    });
+  }
+
   const course = await prisma.course.findUnique({ where: { id: courseId }, select: { totalTasks: true } });
   const totalTasks = course?.totalTasks ?? 0;
 
-  // Сохраняем очки и прогресс курса: progress = количество выполненных заданий (инкремент на 1)
+  // Первое прохождение: начисляем очки, увеличиваем прогресс, сохраняем факт прохождения
   const [user, userCourse] = await prisma.$transaction([
     prisma.user.update({
       where: { id: childId },
@@ -52,6 +75,9 @@ export async function POST(
       create: { userId: childId, courseId, purchased: false, progress: 1 },
       update: { progress: { increment: 1 } },
       select: { progress: true },
+    }),
+    prisma.lessonCompletion.create({
+      data: { userId: childId, courseId, lessonSlug },
     }),
   ]);
 
