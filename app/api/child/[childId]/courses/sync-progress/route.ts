@@ -1,20 +1,31 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
+
+function reqFromRequest(request: Request): { headers: Headers; cookies: Record<string, string> } {
+  const cookieHeader = request.headers.get('cookie') ?? '';
+  const cookies: Record<string, string> = {};
+  for (const part of cookieHeader.split(';')) {
+    const [name, ...rest] = part.trim().split('=');
+    if (name) cookies[name.trim()] = rest.join('=').trim();
+  }
+  return { headers: request.headers, cookies };
+}
 
 /** POST body: { courseId: string, completedCount: number } — синхронизирует прогресс курса (например из localStorage математики). */
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ childId: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
+  const token = await getToken({
+    req: reqFromRequest(request) as unknown as Parameters<typeof getToken>[0]['req'],
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  if (!token?.id || !token?.role) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  const userId = (session.user as { id: string }).id;
-  const role = (session.user as { role: string }).role;
+  const userId = token.id as string;
+  const role = token.role as string;
   const { childId } = await params;
 
   if (role === 'CHILD' && userId !== childId) {

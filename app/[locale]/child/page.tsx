@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useChildId } from '@/contexts/ChildIdContext';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -56,6 +56,7 @@ function getCourseIconPath(c: CourseItem): string | null {
 export default function ChildMainPage() {
   const childId = useChildId();
   const locale = useLocale();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('child');
   const [courses, setCourses] = useState<CourseItem[]>([]);
@@ -88,14 +89,19 @@ export default function ChildMainPage() {
     if (!childId) return;
     setLoadError(null);
     setLoading(true);
-    fetch(`/api/child/${childId}/courses`)
+    fetch(`/api/child/${childId}/courses`, { credentials: 'include' })
       .then((r) => {
+        if (r.status === 401) {
+          router.replace(`/${locale}/login`);
+          return null;
+        }
         if (!r.ok) {
-          throw new Error(r.status === 401 ? 'Unauthorized' : r.status === 403 ? 'Forbidden' : `HTTP ${r.status}`);
+          throw new Error(r.status === 403 ? 'Forbidden' : `HTTP ${r.status}`);
         }
         return r.json();
       })
       .then(async (data) => {
+        if (data == null) return;
         const list = data.courses ?? [];
         const mathCourse = list.find(
           (c: CourseItem) =>
@@ -111,10 +117,11 @@ export default function ChildMainPage() {
             if (localCount > apiCount) {
               await fetch(`/api/child/${childId}/courses/sync-progress`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ courseId: mathCourse.id, completedCount: localCount }),
               });
-              const res = await fetch(`/api/child/${childId}/courses`);
+              const res = await fetch(`/api/child/${childId}/courses`, { credentials: 'include' });
               if (!res.ok) throw new Error('Sync failed');
               const next = await res.json();
               setCourses(next.courses ?? list);
