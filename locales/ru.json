@@ -56,8 +56,6 @@
     "trial": "Пробный доступ",
     "trialHint": "1-2 урока открыто",
     "noCourses": "Пока нет курсов.",
-    "coursesLoadError": "Не удалось загрузить курсы.",
-    "retry": "Повторить",
     "otherCourses": "Остальные курсы",
     "level": "Уровень",
     "levelBeginner": "Начинающий",
