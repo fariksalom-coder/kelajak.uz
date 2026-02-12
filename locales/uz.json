@@ -56,6 +56,8 @@
     "trial": "Sinov",
     "trialHint": "1-2 dars ochiq",
     "noCourses": "Hali kurslar yo'q.",
+    "coursesLoadError": "Kurslarni yuklab bo'lmadi.",
+    "retry": "Qayta urinish",
     "otherCourses": "Boshqa kurslar",
     "level": "Daraja",
     "levelBeginner": "Boshlang'ich",

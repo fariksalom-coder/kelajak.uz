@@ -60,6 +60,7 @@ export default function ChildMainPage() {
   const t = useTranslations('child');
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showCharLeft, setShowCharLeft] = useState(true);
   const [showCharRight, setShowCharRight] = useState(true);
   const asChild = searchParams.get('asChild');
@@ -83,9 +84,17 @@ export default function ChildMainPage() {
 
   const MATH_COMPLETED_KEY = 'zukko_math1grade_s0_completed';
 
-  const fetchCourses = () =>
+  const fetchCourses = () => {
+    if (!childId) return;
+    setLoadError(null);
+    setLoading(true);
     fetch(`/api/child/${childId}/courses`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) {
+          throw new Error(r.status === 401 ? 'Unauthorized' : r.status === 403 ? 'Forbidden' : `HTTP ${r.status}`);
+        }
+        return r.json();
+      })
       .then(async (data) => {
         const list = data.courses ?? [];
         const mathCourse = list.find(
@@ -106,6 +115,7 @@ export default function ChildMainPage() {
                 body: JSON.stringify({ courseId: mathCourse.id, completedCount: localCount }),
               });
               const res = await fetch(`/api/child/${childId}/courses`);
+              if (!res.ok) throw new Error('Sync failed');
               const next = await res.json();
               setCourses(next.courses ?? list);
               return;
@@ -116,7 +126,9 @@ export default function ChildMainPage() {
         }
         setCourses(list);
       })
+      .catch((err) => setLoadError(err?.message ?? 'Failed to load'))
       .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     if (!childId) return;
@@ -124,6 +136,21 @@ export default function ChildMainPage() {
   }, [childId]);
 
   if (loading) return <div className="p-4">Loading...</div>;
+
+  if (loadError) {
+    return (
+      <main className="min-h-full flex flex-col items-center justify-center p-6">
+        <p className="text-gray-700 mb-4">{t('coursesLoadError')}</p>
+        <button
+          type="button"
+          onClick={() => fetchCourses()}
+          className="px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-medium"
+        >
+          {t('retry')}
+        </button>
+      </main>
+    );
+  }
 
   const allCourses = sortCourses(courses);
 
