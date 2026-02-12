@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
+import RotateDeviceOverlay from '@/components/lesson/RotateDeviceOverlay';
 import TaskScreen from '@/components/lesson/TaskScreen';
+import { useLandscapeForTask, exitLandscape } from '@/hooks/useLandscapeForTask';
 import { useChildId } from '@/contexts/ChildIdContext';
 import { useLocale } from 'next-intl';
 import { MATH_TAB0_SECTIONS } from './math-1grade-data/sections-tab0';
@@ -188,6 +190,11 @@ export default function CourseDetailPage() {
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(() => getCompletedLessons());
   const sectionsScrollRef = useRef<HTMLDivElement>(null);
   const startAudioRef = useRef<HTMLAudioElement | null>(null);
+  const taskOverlayRef = useRef<HTMLDivElement>(null);
+  const { requestLandscape, showRotatePrompt } = useLandscapeForTask({
+    containerRef: taskOverlayRef,
+    isActive: !!selectedLesson,
+  });
   const asChild = searchParams.get('asChild');
   const linkSuffix = asChild ? `?asChild=${asChild}` : '';
 
@@ -202,6 +209,7 @@ export default function CourseDetailPage() {
   }, [selectedLesson]);
 
   const closeLesson = () => {
+    exitLandscape();
     setSelectedLesson(null);
   };
 
@@ -221,6 +229,7 @@ export default function CourseDetailPage() {
   }, [selectedLesson, lessonScreen]);
 
   const handleStartClick = () => {
+    requestLandscape();
     startAudioRef.current?.pause();
     startAudioRef.current = null;
     setLessonScreen('content');
@@ -451,11 +460,13 @@ export default function CourseDetailPage() {
           {/* Har bir topshiriq uchun boshlang‘ich oyna (maktabgacha matematikadagi kabi) */}
           {selectedLesson && (
             <div
+              ref={taskOverlayRef}
               className="fixed inset-0 z-50 flex flex-col bg-cover bg-center bg-no-repeat"
               style={{
                 backgroundImage: `url(${getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx)}/${activeTab === 0 && selectedLesson.sectionIdx === 3 ? 'fon_blok4.png' : activeTab === 0 && (selectedLesson.sectionIdx === 1 || selectedLesson.sectionIdx === 2) ? 'fon4.png' : 'fon.png'})`,
               }}
             >
+              {showRotatePrompt && <RotateDeviceOverlay />}
               {lessonScreen === 'start' && (
                 <div className="flex-1 min-h-0 flex flex-col items-center justify-center relative p-4 sm:p-6 overflow-y-auto">
                   {activeTab === 0 && (selectedLesson.sectionIdx === 2 || selectedLesson.sectionIdx === 3) ? null : (

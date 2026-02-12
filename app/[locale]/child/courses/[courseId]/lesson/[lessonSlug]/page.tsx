@@ -7,7 +7,9 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
+import RotateDeviceOverlay from '@/components/lesson/RotateDeviceOverlay';
 import SpeakerButton from '@/components/lesson/SpeakerButton';
+import { useLandscapeForTask } from '@/hooks/useLandscapeForTask';
 import { useChildId } from '@/contexts/ChildIdContext';
 import ReadingRussian1 from './reading_russian_1/reading_russian_1';
 
@@ -156,6 +158,11 @@ export default function LessonPage() {
   const arcContainerRef = useRef<HTMLDivElement>(null);
   const cubeColumnRef = useRef<HTMLDivElement>(null);
   const textOneRef = useRef<HTMLSpanElement>(null);
+  const lessonContainerRef = useRef<HTMLDivElement>(null);
+  const { requestLandscape, showRotatePrompt } = useLandscapeForTask({
+    containerRef: lessonContainerRef,
+    isActive: lessonSlug === '1-2-3-kirish',
+  });
   const completedSubtasks = Math.min(earnedCirclesForTasks.size, SUBTASKS_TOTAL);
   const completedSubtasksRef = useRef(completedSubtasks);
   completedSubtasksRef.current = completedSubtasks;
@@ -235,6 +242,7 @@ setScreen('explanation');
   };
 
   const handleStart = () => {
+    requestLandscape();
     setStartButtonHiding(true);
     setTimeout(() => {
       setScreen('explanation');
@@ -437,7 +445,8 @@ setScreen('explanation');
   }
 
   return (
-    <div className="min-h-[100dvh] sm:min-h-screen bg-gray-100 flex flex-col items-center p-3 sm:p-4 py-4 sm:py-6">
+    <div ref={lessonContainerRef} className="min-h-[100dvh] sm:min-h-screen bg-gray-100 flex flex-col items-center p-3 sm:p-4 py-4 sm:py-6 relative">
+      {showRotatePrompt && <RotateDeviceOverlay />}
       {/* Рамка задания: высокая, на телефоне — по экрану, контент прокручивается */}
       <div className="w-full max-w-4xl rounded-2xl border-2 border-gray-200 bg-white shadow-lg overflow-hidden flex flex-col h-[calc(100dvh-2rem)] sm:h-[85vh] sm:min-h-[32rem] max-h-[900px]">
         {/* На экране поздравления шапку (назад + кружки) не показываем */}
