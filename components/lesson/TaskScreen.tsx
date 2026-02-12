@@ -18,10 +18,10 @@ export type TaskScreenProps = {
   onComplete?: () => void;
   /** Sayyorani tadqiq qil — xuddi Boshlash kabi fon, orqaga, progress bar, kontent keyinroq */
   /** Tartib bilan sanaymiz — faqat fon va progress bar, etaplar yo'q */
-  lessonVariant?: 'boshlash' | 'sayyorani' | 'raketani-tuzat' | 'tartib-bilan' | 'buyumlarni-next' | 'bolim3-task1' | 'ali-nechanchi-uy' | 'katak-qogoz' | 'raqam-yozish';
-  /** Bo'lim 3 topshiriq 1: etap (0 yoki 1). Parent da saqlansa, qayta mount da yo'qolmaydi */
-  bolim3Task1Stage?: number;
-  onBolim3Task1StageChange?: (stage: number) => void;
+  lessonVariant?: 'boshlash' | 'sayyorani' | 'raketani-tuzat' | 'tartib-bilan' | 'buyumlarni-next' | 'block3-task1' | 'block3-task2' | 'block4-task1' | 'ali-nechanchi-uy' | 'katak-qogoz' | 'raqam-yozish';
+  /** Block 3 task 1: etap (0 yoki 1). Parent da saqlansa, qayta mount da yo'qolmaydi */
+  block3Task1Stage?: number;
+  onBlock3Task1StageChange?: (stage: number) => void;
 };
 
 const STAGES = [
@@ -115,53 +115,78 @@ function ShapeButton({
   );
 }
 
-export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, lessonSlug, onComplete, lessonVariant = 'boshlash', bolim3Task1Stage: bolim3StageProp, onBolim3Task1StageChange }: TaskScreenProps) {
+export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, lessonSlug, onComplete, lessonVariant = 'boshlash', block3Task1Stage: block3StageProp, onBlock3Task1StageChange }: TaskScreenProps) {
   const fonSrc = `${imageBaseUrl}/fon.png`;
   const ramkaSrc = `${imageBaseUrl}/ramka.png`;
   const isTartibBilan = lessonVariant === 'tartib-bilan';
   const isBuyumlarniNext = lessonVariant === 'buyumlarni-next';
-  const isBolim3Task1 = lessonVariant === 'bolim3-task1';
-  const [bolim3StageLocal, setBolim3StageLocal] = useState(0);
-  const bolim3Stage = onBolim3Task1StageChange != null && bolim3StageProp !== undefined ? bolim3StageProp : bolim3StageLocal;
-  const setBolim3Stage = useMemo(
+  const isBlock3Task1 = lessonVariant === 'block3-task1';
+  const isBlock3Task2 = lessonVariant === 'block3-task2';
+  const isBlock4Task1 = lessonVariant === 'block4-task1';
+  const [block3StageLocal, setBlock3StageLocal] = useState(0);
+  const block3Stage = onBlock3Task1StageChange != null && block3StageProp !== undefined ? block3StageProp : block3StageLocal;
+  const setBlock3Stage = useMemo(
     () =>
-      onBolim3Task1StageChange
+      onBlock3Task1StageChange
         ? (s: number | ((prev: number) => number)) => {
-            const v = typeof s === 'function' ? s(bolim3StageProp ?? 0) : s;
-            onBolim3Task1StageChange(v);
+            const v = typeof s === 'function' ? s(block3StageProp ?? 0) : s;
+            onBlock3Task1StageChange(v);
           }
-        : setBolim3StageLocal,
-    [onBolim3Task1StageChange, bolim3StageProp]
+        : setBlock3StageLocal,
+    [onBlock3Task1StageChange, block3StageProp]
   );
-  const [bolim3Answer, setBolim3Answer] = useState('');
-  const [bolim3QuizShowNext, setBolim3QuizShowNext] = useState(false);
-  const bolim3AliOrderRef = useRef<Record<number, number[]>>({});
+  const [block3Answer, setBlock3Answer] = useState('');
+  const [block3QuizShowNext, setBlock3QuizShowNext] = useState(false);
+  const [block3ShowCongrats, setBlock3ShowCongrats] = useState(false);
+  const [block3Task2Selected, setBlock3Task2Selected] = useState<number | null>(null);
+  const [block3Task2Stage, setBlock3Task2Stage] = useState(0);
+  const [block3Task2Stage1Selected, setBlock3Task2Stage1Selected] = useState<number | null>(null);
+  const [block3Task2ShowCongrats, setBlock3Task2ShowCongrats] = useState(false);
+  const block3Task2Stage1OptionsRef = useRef<{ stage: number; options: number[] } | null>(null);
+  const block3AliOrderRef = useRef<Record<number, number[]>>({});
   useEffect(() => {
-    if (isBolim3Task1 && (bolim3Stage < 2 || bolim3Stage > 9)) {
-      setBolim3QuizShowNext(false);
-      if (bolim3Stage < 6 || bolim3Stage > 9) bolim3AliOrderRef.current = {};
-    }
-  }, [isBolim3Task1, bolim3Stage]);
-  useEffect(() => {
-    if (!isBolim3Task1 || !bolim3QuizShowNext || bolim3Stage < 2 || bolim3Stage > 9) return;
+    if (!isBlock3Task2 || block3Task2Stage !== 0 || block3Task2Selected !== 6) return;
     const t = setTimeout(() => {
-      setBolim3QuizShowNext(false);
-      if (bolim3Stage === 9) {
-        if (childId && courseId && lessonSlug) {
-          fetch(`/api/child/${childId}/lesson-complete`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ courseId, lessonSlug, xp: HP_PER_STAGE * 2 }),
-          }).catch(() => {});
-        }
-        onComplete?.();
+      block3Task2Stage1OptionsRef.current = null;
+      setBlock3Task2Stage(1);
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [isBlock3Task2, block3Task2Stage, block3Task2Selected]);
+  useEffect(() => {
+    if (!isBlock3Task2 || block3Task2Stage < 1 || block3Task2Stage > 6) return;
+    const correctOrdinalIndex = block3Task2Stage - 1;
+    if (block3Task2Stage1Selected !== correctOrdinalIndex) return;
+    const t = setTimeout(() => {
+      if (block3Task2Stage === 6) {
+        setBlock3Task2ShowCongrats(true);
       } else {
-        setBolim3Stage(bolim3Stage + 1);
+        block3Task2Stage1OptionsRef.current = null;
+        setBlock3Task2Stage1Selected(null);
+        setBlock3Task2Stage((s) => s + 1);
       }
     }, 1500);
     return () => clearTimeout(t);
-  }, [isBolim3Task1, bolim3QuizShowNext, bolim3Stage, childId, courseId, lessonSlug, onComplete, setBolim3Stage]);
-  const bolim3CharPositions = useMemo(() => {
+  }, [isBlock3Task2, block3Task2Stage, block3Task2Stage1Selected]);
+  useEffect(() => {
+    if (isBlock3Task1 && (block3Stage < 2 || block3Stage > 9)) {
+      setBlock3QuizShowNext(false);
+      setBlock3ShowCongrats(false);
+      if (block3Stage < 6 || block3Stage > 9) block3AliOrderRef.current = {};
+    }
+  }, [isBlock3Task1, block3Stage]);
+  useEffect(() => {
+    if (!isBlock3Task1 || !block3QuizShowNext || block3Stage < 2 || block3Stage > 9) return;
+    const t = setTimeout(() => {
+      setBlock3QuizShowNext(false);
+      if (block3Stage === 9) {
+        setBlock3ShowCongrats(true);
+      } else {
+        setBlock3Stage(block3Stage + 1);
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [isBlock3Task1, block3QuizShowNext, block3Stage, setBlock3Stage]);
+  const block3CharPositions = useMemo(() => {
     const chars = ['Lola', 'Akram', 'Ali', 'Soliha'] as const;
     const pos = [
       { left: '5%', top: '8%' },
@@ -1307,8 +1332,252 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
     );
   }
 
-  // Blok 3, topshiriq 1: etaplar — birinchi: odamlar soni, ikkinchi: tartib sonlar
-  if (isBolim3Task1) {
+  // Block 4 task 1: faqat fon va progress bar (fon_blok4.png)
+  if (isBlock4Task1) {
+    const BLOCK4_TASK1_STEPS = 1;
+    return (
+      <div
+        className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${imageBaseUrl}/fon_blok4.png)` }}
+      >
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+          <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
+            <span className="text-2xl leading-none font-bold">←</span>
+          </button>
+          <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
+            <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${(1 / BLOCK4_TASK1_STEPS) * 100}%` }} aria-hidden />
+            {Array.from({ length: BLOCK4_TASK1_STEPS }).map((_, i) => (
+              <span key={i} className="relative z-10 w-1.5 h-1.5 rounded-full shrink-0 bg-amber-200 ring-2 ring-white" aria-hidden />
+            ))}
+          </div>
+          <div className="w-10 shrink-0" />
+        </header>
+      </div>
+    );
+  }
+
+  // Block 3 task 1: etaplar — birinchi: odamlar soni, ikkinchi: tartib sonlar
+  // Block 3 task 2: etap 0 — nechta aylana; etaplar 1–6 — qaysi rang nechanchi o'rinda (qizil, ko'k, yashil, sariq, binafsha, toq sariq)
+  if (isBlock3Task2) {
+    const BLOCK3_TASK2_STEPS = 7;
+    const TASK2_ORDINALS = ["Birinchi", "Ikkinchi", "Uchinchi", "To'rtinchi", "Beshinchi", "Oltinchi"] as const;
+    const TASK2_ORDINAL_AUDIO = ['birinchi.mp3', 'ikkinchi.mp3', 'uchinchi.mp3', 'tortinchi.mp3', 'beshinchi.mp3', 'oltinchi.mp3'] as const;
+    const TASK2_COLOR_PROMPTS = ["Qizil aylana nechanchi o'rinda?", "Ko'k aylana nechanchi o'rinda?", "Yashil aylana nechanchi o'rinda?", "Sariq aylana nechanchi o'rinda?", "Binafsha aylana nechanchi o'rinda?", "Toq sariq aylana nechanchi o'rinda?"] as const;
+    const TASK2_COLOR_AUDIO = ['qizil-aylana-nechanchi.mp3', 'kok-aylana-nechanchi.mp3', 'yashil-aylana-nechanchi.mp3', 'sariq-aylana-nechanchi.mp3', 'binafsha-aylana-nechanchi.mp3', 'toq-sariq-aylana-nechanchi.mp3'] as const;
+    const circleColorClasses = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-400', 'bg-purple-500', 'bg-orange-500'];
+
+    const playTask2OrdinalAudio = (ordinalIndex: number) => {
+      setAudioPressed(true);
+      setTimeout(() => setAudioPressed(false), 300);
+      try {
+        new Audio(`${imageBaseUrl}/${TASK2_ORDINAL_AUDIO[ordinalIndex]}`).play().catch(() => {});
+      } catch {
+        // ignore
+      }
+    };
+
+    const handleTask2Audio = (stage: number) => {
+      setAudioPressed(true);
+      setTimeout(() => setAudioPressed(false), 300);
+      try {
+        const src = stage === 0 ? `${imageBaseUrl}/ekranda-nechta-aylana.mp3` : `${imageBaseUrl}/${TASK2_COLOR_AUDIO[stage - 1]}`;
+        new Audio(src).play().catch(() => {});
+      } catch {
+        // ignore
+      }
+    };
+
+    const correctOrdinalIndex = block3Task2Stage >= 1 && block3Task2Stage <= 6 ? block3Task2Stage - 1 : 0;
+    let stage1Options: number[] | null = null;
+    const ref = block3Task2Stage1OptionsRef.current;
+    if (block3Task2Stage >= 1 && block3Task2Stage <= 6) {
+      if (ref === null || ref.stage !== block3Task2Stage) {
+        const wrongIndices = [0, 1, 2, 3, 4, 5].filter((i) => i !== correctOrdinalIndex);
+        const wrong1 = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
+        const wrong2 = wrongIndices.filter((i) => i !== wrong1)[Math.floor(Math.random() * 4)];
+        stage1Options = [correctOrdinalIndex, wrong1, wrong2];
+        for (let i = stage1Options.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [stage1Options[i], stage1Options[j]] = [stage1Options[j], stage1Options[i]];
+        }
+        block3Task2Stage1OptionsRef.current = { stage: block3Task2Stage, options: stage1Options };
+      } else {
+        stage1Options = ref.options;
+      }
+    }
+
+    const circleColorsStage0 = circleColorClasses;
+    const circleColorsOrdinal = circleColorClasses;
+
+    const BLOCK3_TASK2_XP = 70;
+    if (block3Task2ShowCongrats) {
+      return (
+        <div
+          className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center p-6"
+          style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
+        >
+          <div className="bg-white/95 rounded-3xl shadow-2xl p-8 sm:p-10 max-w-md w-full text-center">
+            <p className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Barakalla!</p>
+            <p className="text-4xl sm:text-5xl font-bold text-amber-600 mb-8">{BLOCK3_TASK2_XP} ball</p>
+            <button
+              type="button"
+              onClick={() => {
+                if (childId && courseId && lessonSlug) {
+                  fetch(`/api/child/${childId}/lesson-complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ courseId, lessonSlug, xp: BLOCK3_TASK2_XP }),
+                  }).catch(() => {});
+                }
+                onComplete?.();
+              }}
+              className="w-full py-4 px-6 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-xl shadow-lg transition-colors"
+            >
+              Davom etish
+              <span className="ml-2">→</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
+      >
+        <header className="absolute left-0 right-0 top-0 z-10 flex h-14 sm:h-16 items-center justify-between gap-3 px-3 sm:px-4" style={{ backgroundColor: 'rgba(30, 58, 138, 0.9)' }}>
+          <button type="button" onClick={onBack} className="w-10 h-10 shrink-0 rounded-full bg-transparent flex items-center justify-center text-white hover:bg-white/10" aria-label="Orqaga">
+            <span className="text-2xl leading-none font-bold">←</span>
+          </button>
+          <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
+            <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Task2Stage + 1) / BLOCK3_TASK2_STEPS) * 100}%` }} aria-hidden />
+            {Array.from({ length: BLOCK3_TASK2_STEPS }).map((_, i) => (
+              <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Task2Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+            ))}
+          </div>
+          <div className="w-10 shrink-0" />
+        </header>
+        <div className="absolute left-0 right-0 top-14 sm:top-16 bottom-0 flex flex-col items-center px-4 pt-4 gap-4 overflow-y-auto pb-8">
+          {block3Task2Stage === 0 ? (
+            <>
+              <div className="flex items-center justify-center gap-2 shrink-0">
+                <button type="button" onClick={() => handleTask2Audio(0)} className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-gray-700 transition-all duration-200 active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`} aria-label="Ovoz">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+                </button>
+                <p className="text-black text-lg sm:text-xl md:text-2xl font-bold text-center">
+                  Ekranda nechta aylana chizilgan?
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4" style={{ marginTop: '2cm' }}>
+                {circleColorsStage0.map((color, i) => (
+                  <div key={i} className={`rounded-full shrink-0 ${color} shadow-md`} style={{ width: '4cm', height: '4cm', maxWidth: 'min(4cm, 18vw)', maxHeight: 'min(4cm, 18vw)' }} aria-hidden />
+                ))}
+              </div>
+              <div className="flex flex-wrap justify-center gap-4 sm:gap-5" style={{ marginTop: '1cm' }}>
+                {[4, 5, 6].map((value) => {
+                  const correctAnswer = 6;
+                  const selected = block3Task2Selected === value;
+                  const showRight = block3Task2Selected !== null && selected && value === correctAnswer;
+                  const showWrong = block3Task2Selected !== null && selected && value !== correctAnswer;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => {
+                        if (block3Task2Selected === 6) return;
+                        setBlock3Task2Selected(value);
+                        try { new Audio(`${imageBaseUrl}/${value === correctAnswer ? 'correct' : 'wrong'}.mp3`).play().catch(() => {}); } catch { /* ignore */ }
+                      }}
+                      disabled={block3Task2Selected === 6}
+                      className={`min-w-[5.5rem] sm:min-w-[6.5rem] py-4 sm:py-5 px-8 sm:px-10 rounded-3xl font-bold text-2xl sm:text-3xl shadow-xl transition-all duration-200 active:scale-95 ${
+                        showRight ? 'bg-gradient-to-b from-green-500 to-green-600 border-2 border-green-700 text-white shadow-green-500/30' : showWrong ? 'bg-gradient-to-b from-red-400 to-red-500 border-2 border-red-600 text-white shadow-red-500/30' : 'bg-gradient-to-b from-white to-gray-50 border-2 border-sky-200/80 text-gray-800 hover:from-sky-50 hover:to-white hover:border-sky-300 hover:shadow-2xl'
+                      }`}
+                    >
+                      {value}
+                    </button>
+                  );
+                })}
+              </div>
+              {block3Task2Selected === 6 && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] px-6 py-3 rounded-2xl bg-green-500/95 text-white font-bold text-xl shadow-lg animate-fade-in" role="alert">
+                  To&apos;g&apos;ri!
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-center gap-2 shrink-0">
+                <button type="button" onClick={() => handleTask2Audio(block3Task2Stage)} className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-gray-700 transition-all duration-200 active:scale-90 ${audioPressed ? 'bg-gray-300' : 'bg-white/90 hover:bg-gray-100 border border-gray-300'}`} aria-label="Ovoz">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+                </button>
+                <p className="text-black text-lg sm:text-xl md:text-2xl font-bold text-center">
+                  {TASK2_COLOR_PROMPTS[block3Task2Stage - 1]}
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4" style={{ marginTop: '2cm' }}>
+                {circleColorsOrdinal.map((color, i) => (
+                  <div key={i} className={`rounded-full shrink-0 ${color} shadow-md`} style={{ width: '4cm', height: '4cm', maxWidth: 'min(4cm, 18vw)', maxHeight: 'min(4cm, 18vw)' }} aria-hidden />
+                ))}
+              </div>
+              <div className="flex flex-wrap justify-center gap-4 sm:gap-5" style={{ marginTop: '1cm' }}>
+                {(stage1Options ?? [0, 1, 2]).map((ordinalIndex) => {
+                  const label = TASK2_ORDINALS[ordinalIndex];
+                  const correct = ordinalIndex === correctOrdinalIndex;
+                  const selected = block3Task2Stage1Selected === ordinalIndex;
+                  const showRight = block3Task2Stage1Selected !== null && selected && correct;
+                  const showWrong = block3Task2Stage1Selected !== null && selected && !correct;
+                  const correctSelected = block3Task2Stage1Selected === correctOrdinalIndex;
+                  return (
+                    <div
+                      key={ordinalIndex}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        if (correctSelected) return;
+                        setBlock3Task2Stage1Selected(ordinalIndex);
+                        try { new Audio(`${imageBaseUrl}/${correct ? 'correct' : 'wrong'}.mp3`).play().catch(() => {}); } catch { /* ignore */ }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          if (correctSelected) return;
+                          setBlock3Task2Stage1Selected(ordinalIndex);
+                          try { new Audio(`${imageBaseUrl}/${correct ? 'correct' : 'wrong'}.mp3`).play().catch(() => {}); } catch { /* ignore */ }
+                        }
+                      }}
+                      className={`min-w-[5.5rem] sm:min-w-[7rem] py-4 sm:py-5 px-4 sm:px-6 rounded-3xl font-bold text-lg sm:text-xl shadow-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer select-none ${correctSelected ? 'cursor-default' : ''} ${
+                        showRight ? 'bg-gradient-to-b from-green-500 to-green-600 border-2 border-green-700 text-white shadow-green-500/30' : showWrong ? 'bg-gradient-to-b from-red-400 to-red-500 border-2 border-red-600 text-white shadow-red-500/30' : 'bg-gradient-to-b from-white to-gray-50 border-2 border-sky-200/80 text-gray-800 hover:from-sky-50 hover:to-white hover:border-sky-300 hover:shadow-2xl'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); playTask2OrdinalAudio(ordinalIndex); }}
+                        className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center ${showRight || showWrong ? 'text-white/90 hover:bg-white/20' : 'text-gray-600 hover:bg-gray-100'}`}
+                        aria-label="Ovoz"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                        </svg>
+                      </button>
+                      {label}
+                    </div>
+                  );
+                })}
+              </div>
+              {block3Task2Stage1Selected === correctOrdinalIndex && (
+                <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] px-6 py-3 rounded-2xl bg-green-500/95 text-white font-bold text-xl shadow-lg animate-fade-in" role="alert">
+                  To&apos;g&apos;ri!
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (isBlock3Task1) {
     const handleBolim3Audio = (src: string) => {
       setAudioPressed(true);
       setTimeout(() => setAudioPressed(false), 300);
@@ -1318,23 +1587,59 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         // ignore
       }
     };
-    const bolim3Correct = 4;
-    const BOLIM3_ETAP2 = [
+    const block3Correct = 4;
+    const pointsPerEtap = 10;
+    const totalBlock3Task1Etaps = 10;
+    const totalBlock3Task1Xp = pointsPerEtap * totalBlock3Task1Etaps;
+
+    // Tabriklash ekrani: barcha etaplar bajarilgach
+    if (block3ShowCongrats) {
+      return (
+        <div
+          className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center p-6"
+          style={{ backgroundImage: `url(${imageBaseUrl}/fon4.png)` }}
+        >
+          <div className="bg-white/95 rounded-3xl shadow-2xl p-8 sm:p-10 max-w-md w-full text-center">
+            <p className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Barakalla!</p>
+            <p className="text-4xl sm:text-5xl font-bold text-amber-600 mb-8">{totalBlock3Task1Xp} ball</p>
+            <button
+              type="button"
+              onClick={() => {
+                if (childId && courseId && lessonSlug) {
+                  fetch(`/api/child/${childId}/lesson-complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ courseId, lessonSlug, xp: totalBlock3Task1Xp }),
+                  }).catch(() => {});
+                }
+                onComplete?.();
+              }}
+              className="w-full py-4 px-6 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-xl shadow-lg transition-colors"
+            >
+              Davom etish
+              <span className="ml-2">→</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const BLOCK3_TASK1_ETAP2 = [
       { name: 'Lola' as const, text: "Men birinchi", audio: 'men-birinchi.mp3' },
       { name: 'Akram' as const, text: "Men ikkinchi", audio: 'men-ikkinchi.mp3' },
       { name: 'Ali' as const, text: "Men uchinchi", audio: 'men-uchinchi.mp3' },
       { name: 'Soliha' as const, text: "Men to'rtinchi", audio: 'men-tortinchi.mp3' },
     ];
-    const BOLIM3_QUIZ_STAGES = [
+    const BLOCK3_TASK1_QUIZ_STAGES = [
       { prompt: "Ikkinchida turgan bolani tanla", correctIndex: 1 },
       { prompt: "Birinchida turgan bolani tanla", correctIndex: 0 },
       { prompt: "Uchinchida turgan bolani tanla", correctIndex: 2 },
       { prompt: "To'rtinchida turgan bolani tanla", correctIndex: 3 },
     ];
-    const BOLIM3_TOTAL_STAGES = 10;
-    const BOLIM3_ORDINAL_LABELS = ["Birinchi", "Ikkinchi", "Uchinchi", "To'rtinchi"] as const;
-    const BOLIM3_ORDINAL_AUDIO = ['men-birinchi.mp3', 'men-ikkinchi.mp3', 'men-uchinchi.mp3', 'men-tortinchi.mp3'] as const;
-    const BOLIM3_NECHANCHI_STAGES = [
+    const BLOCK3_TASK1_TOTAL_STAGES = 10;
+    const BLOCK3_TASK1_ORDINAL_LABELS = ["Birinchi", "Ikkinchi", "Uchinchi", "To'rtinchi"] as const;
+    const BLOCK3_TASK1_ORDINAL_AUDIO = ['men-birinchi.mp3', 'men-ikkinchi.mp3', 'men-uchinchi.mp3', 'men-tortinchi.mp3'] as const;
+    const BLOCK3_TASK1_NECHANCHI_STAGES = [
       { prompt: "Ali nechanchi o'rinda?", correctIndex: 2, audio: 'ali-nechanchi.mp3' },
       { prompt: "Lola nechanchi o'rinda?", correctIndex: 0, audio: 'lola-nechanchi.mp3' },
       { prompt: "Akram nechanchi o'rinda?", correctIndex: 1, audio: 'akram-nechanchi.mp3' },
@@ -1342,21 +1647,21 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
     ] as const;
 
     // Etaplar 6–9: “X nechanchi o'rinda?” — har bir qahramon uchun tartibni tanlash
-    let bolim3OrdinalOrder = bolim3Stage >= 6 && bolim3Stage <= 9 ? bolim3AliOrderRef.current[bolim3Stage] : undefined;
-    if (bolim3Stage >= 6 && bolim3Stage <= 9 && !bolim3OrdinalOrder) {
+    let block3OrdinalOrder = block3Stage >= 6 && block3Stage <= 9 ? block3AliOrderRef.current[block3Stage] : undefined;
+    if (block3Stage >= 6 && block3Stage <= 9 && !block3OrdinalOrder) {
       const order = [0, 1, 2, 3];
       for (let i = order.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [order[i], order[j]] = [order[j], order[i]];
       }
-      bolim3AliOrderRef.current[bolim3Stage] = order;
-      bolim3OrdinalOrder = order;
+      block3AliOrderRef.current[block3Stage] = order;
+      block3OrdinalOrder = order;
     }
-    const bolim3OrdinalOrderSafe = bolim3OrdinalOrder ?? [0, 1, 2, 3];
+    const block3OrdinalOrderSafe = block3OrdinalOrder ?? [0, 1, 2, 3];
 
-    if (bolim3Stage >= 6 && bolim3Stage <= 9) {
-      const nechanchiIndex = bolim3Stage - 6;
-      const nechanchi = BOLIM3_NECHANCHI_STAGES[nechanchiIndex];
+    if (block3Stage >= 6 && block3Stage <= 9) {
+      const nechanchiIndex = block3Stage - 6;
+      const nechanchi = BLOCK3_TASK1_NECHANCHI_STAGES[nechanchiIndex];
       return (
         <div
           className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
@@ -1367,9 +1672,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <span className="text-2xl leading-none font-bold">←</span>
             </button>
             <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
-              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / BOLIM3_TOTAL_STAGES) * 100}%` }} aria-hidden />
-              {Array.from({ length: BOLIM3_TOTAL_STAGES }).map((_, i) => (
-                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / BLOCK3_TASK1_TOTAL_STAGES) * 100}%` }} aria-hidden />
+              {Array.from({ length: BLOCK3_TASK1_TOTAL_STAGES }).map((_, i) => (
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
               ))}
             </div>
             <div className="w-10 shrink-0" />
@@ -1391,7 +1696,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               </p>
             </div>
             <div className="flex items-stretch justify-center gap-2 sm:gap-4 w-full max-w-2xl shrink-0" style={{ marginTop: '2cm' }}>
-              {BOLIM3_ETAP2.map(({ name, audio }) => (
+              {BLOCK3_TASK1_ETAP2.map(({ name, audio }) => (
                 <div key={name} className="flex flex-col items-center flex-1 min-w-0">
                   <div className="origin-center" style={{ transform: 'scale(1.75)' }}>
                     <CharacterAvatar name={name} size="md" />
@@ -1413,9 +1718,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               ))}
             </div>
             <div className="flex flex-nowrap justify-center items-stretch gap-3 sm:gap-4 w-full max-w-3xl shrink-0 mt-4">
-              {bolim3OrdinalOrderSafe.map((ordinalIndex) => {
-                const label = BOLIM3_ORDINAL_LABELS[ordinalIndex];
-                const audioFile = BOLIM3_ORDINAL_AUDIO[ordinalIndex];
+              {block3OrdinalOrderSafe.map((ordinalIndex) => {
+                const label = BLOCK3_TASK1_ORDINAL_LABELS[ordinalIndex];
+                const audioFile = BLOCK3_TASK1_ORDINAL_AUDIO[ordinalIndex];
                 const isCorrect = ordinalIndex === nechanchi.correctIndex;
                 return (
                   <div key={ordinalIndex} className="flex flex-col items-center gap-2 flex-1 min-w-0">
@@ -1432,10 +1737,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                     <button
                       type="button"
                       onClick={() => {
-                        if (bolim3QuizShowNext) return;
+                        if (block3QuizShowNext) return;
                         if (isCorrect) {
                           new Audio(`${imageBaseUrl}/correct.mp3`).play().catch(() => {});
-                          setBolim3QuizShowNext(true);
+                          setBlock3QuizShowNext(true);
                         } else {
                           new Audio(`${imageBaseUrl}/wrong.mp3`).play().catch(() => {});
                         }
@@ -1449,7 +1754,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               })}
             </div>
           </div>
-          {bolim3QuizShowNext && (
+          {block3QuizShowNext && (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/30 p-6 pointer-events-none">
               <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-xl">
                 <p className="text-2xl sm:text-3xl font-bold text-gray-800">To&apos;g&apos;ri!</p>
@@ -1461,9 +1766,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
     }
 
     // Etaplar 3–6: “X turgan bolani tanla” — to‘g‘ri javobni tanlash
-    if (bolim3Stage >= 2 && bolim3Stage <= 5) {
-      const quizIndex = bolim3Stage - 2;
-      const quiz = BOLIM3_QUIZ_STAGES[quizIndex];
+    if (block3Stage >= 2 && block3Stage <= 5) {
+      const quizIndex = block3Stage - 2;
+      const quiz = BLOCK3_TASK1_QUIZ_STAGES[quizIndex];
       const isLastQuiz = false;
       return (
         <div
@@ -1475,9 +1780,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <span className="text-2xl leading-none font-bold">←</span>
             </button>
             <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
-              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / BOLIM3_TOTAL_STAGES) * 100}%` }} aria-hidden />
-              {Array.from({ length: BOLIM3_TOTAL_STAGES }).map((_, i) => (
-                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / BLOCK3_TASK1_TOTAL_STAGES) * 100}%` }} aria-hidden />
+              {Array.from({ length: BLOCK3_TASK1_TOTAL_STAGES }).map((_, i) => (
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
               ))}
             </div>
             <div className="w-10 shrink-0" />
@@ -1499,17 +1804,17 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               </p>
             </div>
             <div className="flex items-stretch justify-center gap-2 sm:gap-4 flex-1 w-full max-w-2xl" style={{ marginTop: '3cm' }}>
-              {BOLIM3_ETAP2.map(({ name, text, audio }, index) => {
+              {BLOCK3_TASK1_ETAP2.map(({ name, text, audio }, index) => {
                 const isCorrect = index === quiz.correctIndex;
                 return (
                   <button
                     key={name}
                     type="button"
                     onClick={() => {
-                      if (bolim3QuizShowNext) return;
+                      if (block3QuizShowNext) return;
                       if (isCorrect) {
                         new Audio(`${imageBaseUrl}/correct.mp3`).play().catch(() => {});
-                        setBolim3QuizShowNext(true);
+                        setBlock3QuizShowNext(true);
                       } else {
                         new Audio(`${imageBaseUrl}/wrong.mp3`).play().catch(() => {});
                       }
@@ -1539,7 +1844,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               })}
             </div>
           </div>
-          {bolim3QuizShowNext && (
+          {block3QuizShowNext && (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/30 p-6 pointer-events-none">
               <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-xl">
                 <p className="text-2xl sm:text-3xl font-bold text-gray-800">To&apos;g&apos;ri!</p>
@@ -1551,7 +1856,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
     }
 
     // Ikkinchi etap: Tartib sonlarni o'rganamiz (Lola birinchi, Akram ikkinchi, ...)
-    if (bolim3Stage === 1) {
+    if (block3Stage === 1) {
       return (
         <div
           className="fixed inset-0 z-50 overflow-hidden bg-cover bg-center bg-no-repeat"
@@ -1562,9 +1867,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <span className="text-2xl leading-none font-bold">←</span>
             </button>
             <div className="relative flex flex-1 max-w-[30rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] px-2 overflow-hidden">
-              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / BOLIM3_TOTAL_STAGES) * 100}%` }} aria-hidden />
-              {Array.from({ length: BOLIM3_TOTAL_STAGES }).map((_, i) => (
-                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / BLOCK3_TASK1_TOTAL_STAGES) * 100}%` }} aria-hidden />
+              {Array.from({ length: BLOCK3_TASK1_TOTAL_STAGES }).map((_, i) => (
+                <span key={i} className={`relative z-10 w-1.5 h-1.5 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
               ))}
             </div>
             <div className="w-10 shrink-0" />
@@ -1586,7 +1891,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               </p>
             </div>
             <div className="flex items-stretch justify-center gap-2 sm:gap-4 flex-1 w-full max-w-2xl" style={{ marginTop: '3cm' }}>
-              {BOLIM3_ETAP2.map(({ name, text, audio }) => (
+              {BLOCK3_TASK1_ETAP2.map(({ name, text, audio }) => (
                 <div key={name} className="flex flex-col items-center flex-1 min-w-0">
                   <div className="origin-center" style={{ transform: 'scale(1.75)' }}>
                     <CharacterAvatar name={name} size="md" />
@@ -1611,7 +1916,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           <div className="absolute left-0 right-0 z-10 px-4 py-4 safe-area-pb" style={{ bottom: '2cm' }}>
             <button
               type="button"
-              onClick={() => setBolim3Stage(2)}
+              onClick={() => setBlock3Stage(2)}
               className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 py-4 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-xl shadow-md"
             >
               Davom etish
@@ -1638,9 +1943,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             <span className="text-2xl leading-none font-bold">←</span>
           </button>
           <div className="relative flex flex-1 max-w-[30rem] sm:max-w-[36rem] rounded-full items-center justify-between bg-white/20 h-[1.8rem] sm:h-[2.1rem] px-2 sm:px-3 overflow-hidden">
-            <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((bolim3Stage + 1) / 10) * 100}%` }} aria-hidden />
+            <div className="absolute inset-y-0 left-0 rounded-full bg-amber-400 transition-all" style={{ width: `${((block3Stage + 1) / 10) * 100}%` }} aria-hidden />
             {Array.from({ length: 10 }).map((_, i) => (
-              <span key={i} className={`relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 ${i <= bolim3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
+              <span key={i} className={`relative z-10 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 ${i <= block3Stage ? 'bg-amber-200 ring-2 ring-white' : 'bg-white/70'}`} aria-hidden />
             ))}
           </div>
           <div className="w-10 shrink-0" />
@@ -1666,11 +1971,11 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               className="min-w-[3.5rem] h-12 sm:h-14 rounded-2xl border-4 flex items-center justify-center font-bold text-2xl sm:text-3xl text-[#3f4699] bg-amber-50 border-amber-500 shadow-lg ring-2 ring-amber-400/50 shrink-0 px-3"
               style={{ minWidth: '4rem' }}
             >
-              {bolim3Answer || <span className="animate-blink text-[#3f4699]">|</span>}
+              {block3Answer || <span className="animate-blink text-[#3f4699]">|</span>}
             </div>
           </div>
           <div className="relative w-full flex-1 min-h-[10rem] sm:min-h-[12rem] mt-2">
-            {bolim3CharPositions.map(({ name, left, top }) => (
+            {block3CharPositions.map(({ name, left, top }) => (
               <div
                 key={name}
                 className="absolute origin-center"
@@ -1681,7 +1986,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             ))}
           </div>
         </div>
-        {bolim3Answer === String(bolim3Correct) && (
+        {block3Answer === String(block3Correct) && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/30 p-6 pointer-events-none">
             <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-xl">
               <p className="text-2xl sm:text-3xl font-bold text-gray-800">To&apos;g&apos;ri!</p>
@@ -1695,19 +2000,19 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 key={num}
                 type="button"
                 onClick={() => {
-                  if (bolim3Answer !== '') return;
-                  const isCorrect = num === bolim3Correct;
-                  setBolim3Answer(String(num));
+                  if (block3Answer !== '') return;
+                  const isCorrect = num === block3Correct;
+                  setBlock3Answer(String(num));
                   if (isCorrect) {
                     new Audio(`${imageBaseUrl}/correct.mp3`).play().catch(() => {});
                     // 1.2 sekunddan keyin ikkinchi etapga o‘tamiz (Tartib sonlar)
                     setTimeout(() => {
-                      setBolim3Stage(1);
-                      setBolim3Answer('');
+                      setBlock3Stage(1);
+                      setBlock3Answer('');
                     }, 1200);
                   } else {
                     new Audio(`${imageBaseUrl}/wrong.mp3`).play().catch(() => {});
-                    setTimeout(() => setBolim3Answer(''), 800);
+                    setTimeout(() => setBlock3Answer(''), 800);
                   }
                 }}
                 className="rounded-xl bg-white text-[#3f4699] font-bold shadow-sm border border-gray-200/80 hover:bg-gray-50 active:scale-95 transition-transform w-[3.15rem] h-[3.85rem] sm:w-[3.85rem] sm:h-[4.2rem] text-[1.575rem] sm:text-[1.75rem]"
@@ -1718,7 +2023,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             ))}
             <button
               type="button"
-              onClick={() => setBolim3Answer('')}
+              onClick={() => setBlock3Answer('')}
               className="rounded-xl flex items-center justify-center shadow-sm border border-gray-200/80 hover:bg-gray-100 active:scale-95 transition-transform w-[3.15rem] h-[3.85rem] sm:w-[3.85rem] sm:h-[4.2rem]"
               style={{ backgroundColor: '#dce8f9' }}
               aria-label="O'chirish"

@@ -45,8 +45,12 @@
   },
   "child": {
     "main": "Bosh sahifa",
+    "soon": "Tez orada",
+    "coursesTitle": "O'qish Kurslaringiz",
+    "searchPlaceholder": "Qidirish",
     "stats": "Statistika",
     "profile": "Profil",
+    "coursesNav": "Kurslar",
     "myCourses": "Mening kurslarim",
     "bought": "Sotib olingan",
     "trial": "Sinov",

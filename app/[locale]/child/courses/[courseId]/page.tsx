@@ -7,6 +7,7 @@ import { useChildId } from '@/contexts/ChildIdContext';
 import { useLocale } from 'next-intl';
 import Math1Grade from './math_1grade';
 import RussianCoursePage from './russian_course';
+import FinanceCoursePage from './finance_course';
 
 type CourseItem = {
   id: string;
@@ -51,7 +52,8 @@ export default function CourseDetailPage() {
     );
   }
 
-  const courseName = (course.titleUz ?? course.title).toLowerCase();
+  const rawName = (course.titleUz ?? course.title) ?? '';
+  const courseName = rawName.toLowerCase().replace(/[\u2018\u2019\u0027\u0060]/g, "'");
   const isMatematika =
     courseName.includes('matematika') || courseName.includes('математика');
   const isRusTili =
@@ -59,6 +61,11 @@ export default function CourseDetailPage() {
     courseName.includes('ruski') ||
     courseName.includes('русский') ||
     courseName.includes('russian');
+  const financeCourse = courses.find((c) => {
+    const n = ((c.titleUz ?? c.title) ?? '').toLowerCase();
+    return n.includes('moliyaviy') || n.includes('savodxonlik') || n.includes('moliya') || n.includes('financial');
+  });
+  const isMoliyaviy = financeCourse != null && course.id === financeCourse.id;
 
   if (isMatematika) {
     return <Math1Grade />;
@@ -67,6 +74,16 @@ export default function CourseDetailPage() {
   if (isRusTili) {
     return (
       <RussianCoursePage
+        course={course}
+        locale={locale}
+        linkSuffix={linkSuffix}
+      />
+    );
+  }
+
+  if (isMoliyaviy) {
+    return (
+      <FinanceCoursePage
         course={course}
         locale={locale}
         linkSuffix={linkSuffix}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
 import SpeakerButton from '@/components/lesson/SpeakerButton';
@@ -125,12 +126,12 @@ const TASKS: TaskConfig[] = [
 export default function LessonPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const locale = params.locale as string;
-  const courseId = params.courseId as string;
-  const lessonSlug = params.lessonSlug as string;
+  const locale = useLocale();
+  const courseId = (params?.courseId as string) ?? '';
+  const lessonSlug = (params?.lessonSlug as string) ?? '';
   const asChild = searchParams.get('asChild');
   const linkSuffix = asChild ? `?asChild=${asChild}` : '';
-  const courseUrl = `/${locale}/child/courses/${courseId}${linkSuffix}`;
+  const courseUrl = courseId ? `/${locale}/child/courses/${courseId}${linkSuffix}` : `/${locale}/child${linkSuffix}`;
 
   const [screen, setScreen] = useState<Screen>('start');
   const [startButtonHiding, setStartButtonHiding] = useState(false);
@@ -408,6 +409,17 @@ setScreen('explanation');
       }, 1500);
     }
   };
+
+  if (!params?.lessonSlug) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <p className="text-gray-600 animate-pulse">Yuklanmoqda...</p>
+        <Link href={courseUrl} className="mt-4 text-sky-600 hover:underline">
+          Orqaga
+        </Link>
+      </div>
+    );
+  }
 
   if (lessonSlug === 'reading-russian-1') {
     return <ReadingRussian1 />;

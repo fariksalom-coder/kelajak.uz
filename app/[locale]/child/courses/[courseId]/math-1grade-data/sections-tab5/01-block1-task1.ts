@@ -1,8 +1,8 @@
 import type { SectionData } from '../types';
 
 export const section: SectionData = {
-  sectionTitle: "Qo'shish va ayirish",
-  subsectionTitle: 'Nom beriladi 4',
+  sectionTitle: 'Matnli masalalar',
+  subsectionTitle: 'Blok 1',
   lessons: [
     { label: 'Topshiriq 1', status: 'locked' },
     { label: 'Topshiriq 2', status: 'locked' },

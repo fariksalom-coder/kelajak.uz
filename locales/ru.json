@@ -45,8 +45,12 @@
   },
   "child": {
     "main": "Главное",
+    "soon": "Скоро",
+    "coursesTitle": "Ваши курсы",
+    "searchPlaceholder": "Поиск",
     "stats": "Статистика",
     "profile": "Профиль",
+    "coursesNav": "Курсы",
     "myCourses": "Мои курсы",
     "bought": "Куплено",
     "trial": "Пробный доступ",

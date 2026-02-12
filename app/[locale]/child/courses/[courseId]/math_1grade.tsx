@@ -9,9 +9,9 @@ import Cube from '@/components/lesson/Cube';
 import TaskScreen from '@/components/lesson/TaskScreen';
 import { useChildId } from '@/contexts/ChildIdContext';
 import { useLocale } from 'next-intl';
-import { MATH_BOLIM_1_SECTIONS } from './math-1grade-data/sections-bolim-1';
-import { MATH_BOLIM_2_SECTIONS } from './math-1grade-data/sections-bolim-2';
-import { MATH_BOLIM_5_SECTIONS } from './math-1grade-data/sections-bolim-5';
+import { MATH_TAB0_SECTIONS } from './math-1grade-data/sections-tab0';
+import { MATH_TAB1_SECTIONS } from './math-1grade-data/sections-tab1';
+import { MATH_TAB5_SECTIONS } from './math-1grade-data/sections-tab5';
 import type { LessonStatus } from './math-1grade-data/types';
 
 /** Bo‘lim va qism indeksiga qarab rasm papkasi (public/courses/math-1grade/...). */
@@ -96,10 +96,21 @@ function setCompletedLessonsStorage(keys: Set<string>) {
   }
 }
 
+function reportLessonCompleteToApi(childId: string | null, courseId: string, lessonKey: string) {
+  if (!childId) return;
+  fetch(`/api/child/${childId}/lesson-complete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ courseId, lessonSlug: `math-${lessonKey}`, xp: 10 }),
+  }).catch(() => {});
+}
+
 const SECTION_0_LESSON_COUNT = 3; // Boshlash, Sayyorani, Raketani tuzat
 
-/** Section 0 (Kosmik sarguzasht) da kartochka statusi: completedLessons bo'yicha */
-function getSection0LessonStatus(lessonIdx: number, completedLessons: Set<string>): LessonStatus {
+// sectionIdx 0 = Block 1, 1 = Block 2, 2 = Block 3, 3 = Block 4
+
+/** Block 1 (sectionIdx 0 — Kosmik sarguzasht): kartochka statusi */
+function getBlock1LessonStatus(lessonIdx: number, completedLessons: Set<string>): LessonStatus {
   const key = `0-${lessonIdx}`;
   if (completedLessons.has(key)) return 'completed';
   for (let j = 0; j < lessonIdx; j++) {
@@ -108,16 +119,16 @@ function getSection0LessonStatus(lessonIdx: number, completedLessons: Set<string
   return 'current';
 }
 
-/** Section 0 barcha topshiriqlari bajarilgach, section 1 ning birinchi topshiriqi ochiladi */
-function isSection0Complete(completedLessons: Set<string>): boolean {
+/** Block 1 tugagach Block 2 ochiladi */
+function isBlock1Complete(completedLessons: Set<string>): boolean {
   for (let j = 0; j < SECTION_0_LESSON_COUNT; j++) {
     if (!completedLessons.has(`0-${j}`)) return false;
   }
   return true;
 }
 
-/** Section 1 (Buyumlarni qayta sanash) da kartochka statusi — faqat section 1 ichida ketma-ket */
-function getSection1LessonStatus(lessonIdx: number, completedLessons: Set<string>): LessonStatus {
+/** Block 2 (sectionIdx 1 — Buyumlarni qayta sanash): kartochka statusi */
+function getBlock2LessonStatus(lessonIdx: number, completedLessons: Set<string>): LessonStatus {
   const key = `1-${lessonIdx}`;
   if (completedLessons.has(key)) return 'completed';
   for (let j = 0; j < lessonIdx; j++) {
@@ -126,22 +137,37 @@ function getSection1LessonStatus(lessonIdx: number, completedLessons: Set<string
   return 'current';
 }
 
-/** Section 1 barcha 3 topshiriq bajarilgach (1-0, 1-1, 1-2), Bo'lim 3 ochiladi */
-const SECTION_1_LAST_LESSON = 2;
-function isSection1Complete(completedLessons: Set<string>): boolean {
-  for (let j = 0; j <= SECTION_1_LAST_LESSON; j++) {
+/** Block 2 tugagach Block 3 ochiladi */
+const BLOCK2_LAST_LESSON = 2;
+function isBlock2Complete(completedLessons: Set<string>): boolean {
+  for (let j = 0; j <= BLOCK2_LAST_LESSON; j++) {
     if (!completedLessons.has(`1-${j}`)) return false;
   }
   return true;
 }
 
-/** Section 2 (Bo'lim 3) da kartochka statusi — section 1 tugagach ochiladi */
-function getSection2LessonStatus(lessonIdx: number, completedLessons: Set<string>): LessonStatus {
-  if (!isSection1Complete(completedLessons)) return 'locked';
+/** Block 3 (sectionIdx 2): kartochka statusi — Block 2 tugagach ochiladi */
+function getBlock3LessonStatus(lessonIdx: number, completedLessons: Set<string>): LessonStatus {
+  if (!isBlock2Complete(completedLessons)) return 'locked';
   const key = `2-${lessonIdx}`;
   if (completedLessons.has(key)) return 'completed';
   for (let j = 0; j < lessonIdx; j++) {
     if (!completedLessons.has(`2-${j}`)) return 'locked';
+  }
+  return 'current';
+}
+
+function isBlock3Complete(completedLessons: Set<string>): boolean {
+  return completedLessons.has('2-0') && completedLessons.has('2-1');
+}
+
+/** Block 4 (sectionIdx 3): kartochka statusi — Block 3 tugagach ochiladi */
+function getBlock4LessonStatus(lessonIdx: number, completedLessons: Set<string>): LessonStatus {
+  if (!isBlock3Complete(completedLessons)) return 'locked';
+  const key = `3-${lessonIdx}`;
+  if (completedLessons.has(key)) return 'completed';
+  for (let j = 0; j < lessonIdx; j++) {
+    if (!completedLessons.has(`3-${j}`)) return 'locked';
   }
   return 'current';
 }
@@ -158,7 +184,7 @@ export default function CourseDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedLesson, setSelectedLesson] = useState<SelectedLesson | null>(null);
   const [lessonScreen, setLessonScreen] = useState<'start' | 'content'>('start');
-  const [bolim3Task1Stage, setBolim3Task1Stage] = useState(0);
+  const [block3Task1Stage, setBlock3Task1Stage] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(() => getCompletedLessons());
   const sectionsScrollRef = useRef<HTMLDivElement>(null);
   const startAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -170,9 +196,9 @@ export default function CourseDetailPage() {
     setLessonScreen('start');
   };
 
-  // Bo'lim 3 topshiriq 1: yangi dars ochilganda etapni 0 qilamiz
+  // Block 3 task 1: yangi dars ochilganda etapni 0 qilamiz
   useEffect(() => {
-    setBolim3Task1Stage(0);
+    setBlock3Task1Stage(0);
   }, [selectedLesson]);
 
   const closeLesson = () => {
@@ -296,7 +322,7 @@ export default function CourseDetailPage() {
           </div>
 
           {[0, 1, 4].includes(activeTab) && (() => {
-            const sections = activeTab === 0 ? MATH_BOLIM_1_SECTIONS : activeTab === 1 ? MATH_BOLIM_2_SECTIONS : MATH_BOLIM_5_SECTIONS;
+            const sections = activeTab === 0 ? MATH_TAB0_SECTIONS : activeTab === 1 ? MATH_TAB1_SECTIONS : MATH_TAB5_SECTIONS;
             return sections.length > 0 ? (
             <div className="space-y-8">
               {sections.map((section, sectionIdx) => (
@@ -325,19 +351,22 @@ export default function CourseDetailPage() {
                   {section.lessons.length > 0 ? (
                     <div className="flex gap-4 overflow-x-auto pb-4">
                       {section.lessons.map((lesson, i) => {
-                        // Section 0 (Kosmik sarguzasht): status completedLessons bo‘yicha; boshqalar qattiq locked
+                        // Block 1–4: status completedLessons bo'yicha (sectionIdx 0=Block1, 1=Block2, 2=Block3, 3=Block4)
                         const effectiveStatus =
                           activeTab === 0 && sectionIdx === 0
-                            ? getSection0LessonStatus(i, completedLessons)
+                            ? getBlock1LessonStatus(i, completedLessons)
                             : activeTab === 0 && sectionIdx === 1
-                              ? getSection1LessonStatus(i, completedLessons)
+                              ? getBlock2LessonStatus(i, completedLessons)
                               : activeTab === 0 && sectionIdx === 2
-                                ? getSection2LessonStatus(i, completedLessons)
-                                : lesson.status;
-                        const isOpenableSection0 = activeTab === 0 && sectionIdx === 0 && (i === 0 || i === 1 || i === 2);
-                        const isOpenableSection1 = activeTab === 0 && sectionIdx === 1 && (i === 0 || i === 1 || i === 2);
-                        const isOpenableSection2 = activeTab === 0 && sectionIdx === 2;
-                        const isOpenableLesson = isOpenableSection0 || isOpenableSection1 || isOpenableSection2;
+                                ? getBlock3LessonStatus(i, completedLessons)
+                                : activeTab === 0 && sectionIdx === 3
+                                  ? getBlock4LessonStatus(i, completedLessons)
+                                  : lesson.status;
+                        const isOpenableBlock1 = activeTab === 0 && sectionIdx === 0 && (i === 0 || i === 1 || i === 2);
+                        const isOpenableBlock2 = activeTab === 0 && sectionIdx === 1 && (i === 0 || i === 1 || i === 2);
+                        const isOpenableBlock3 = activeTab === 0 && sectionIdx === 2;
+                        const isOpenableBlock4 = activeTab === 0 && sectionIdx === 3;
+                        const isOpenableLesson = isOpenableBlock1 || isOpenableBlock2 || isOpenableBlock3 || isOpenableBlock4;
                         const canOpen = isOpenableLesson && (effectiveStatus === 'current' || effectiveStatus === 'completed');
                         return (
                           <div
@@ -424,12 +453,12 @@ export default function CourseDetailPage() {
             <div
               className="fixed inset-0 z-50 flex flex-col bg-cover bg-center bg-no-repeat"
               style={{
-                backgroundImage: `url(${getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx)}/${activeTab === 0 && (selectedLesson.sectionIdx === 1 || selectedLesson.sectionIdx === 2) ? 'fon4.png' : 'fon.png'})`,
+                backgroundImage: `url(${getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx)}/${activeTab === 0 && selectedLesson.sectionIdx === 3 ? 'fon_blok4.png' : activeTab === 0 && (selectedLesson.sectionIdx === 1 || selectedLesson.sectionIdx === 2) ? 'fon4.png' : 'fon.png'})`,
               }}
             >
               {lessonScreen === 'start' && (
                 <div className="flex-1 min-h-0 flex flex-col items-center justify-center relative p-4 sm:p-6 overflow-y-auto">
-                  {activeTab === 0 && selectedLesson.sectionIdx === 2 ? null : (
+                  {activeTab === 0 && (selectedLesson.sectionIdx === 2 || selectedLesson.sectionIdx === 3) ? null : (
                   <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
                     <div className="flex items-center gap-4 opacity-30 blur-md scale-90">
                       <CharacterAvatar name="Lola" size="lg" priority />
@@ -469,11 +498,15 @@ export default function CourseDetailPage() {
                               : activeTab === 0 && selectedLesson.sectionIdx === 1 && selectedLesson.lessonIdx >= 3
                                 ? 'buyumlarni-next'
                                 : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0
-                                  ? 'bolim3-task1'
-                                  : 'boshlash'
+                                  ? 'block3-task1'
+                                  : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 1
+                                    ? 'block3-task2'
+                                    : activeTab === 0 && selectedLesson.sectionIdx === 3 && selectedLesson.lessonIdx === 0
+                                      ? 'block4-task1'
+                                      : 'boshlash'
                   }
-                  bolim3Task1Stage={activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0 ? bolim3Task1Stage : undefined}
-                  onBolim3Task1StageChange={activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0 ? setBolim3Task1Stage : undefined}
+                  block3Task1Stage={activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0 ? block3Task1Stage : undefined}
+                  onBlock3Task1StageChange={activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0 ? setBlock3Task1Stage : undefined}
                   childId={childId ?? undefined}
                   courseId={courseId}
                   lessonSlug={getTaskImageBaseUrl(selectedLesson.tabIndex, selectedLesson.sectionIdx).split('/').pop() ?? 'lesson'}
@@ -483,12 +516,14 @@ export default function CourseDetailPage() {
                           const next = new Set(completedLessons).add('0-0');
                           setCompletedLessons(next);
                           setCompletedLessonsStorage(next);
+                          reportLessonCompleteToApi(childId ?? null, courseId, '0-0');
                         }
                       : activeTab === 0 && selectedLesson.sectionIdx === 0 && selectedLesson.lessonIdx === 1
                         ? () => {
                             const next = new Set(completedLessons).add('0-1');
                             setCompletedLessons(next);
                             setCompletedLessonsStorage(next);
+                            reportLessonCompleteToApi(childId ?? null, courseId, '0-1');
                             setSelectedLesson(null);
                           }
                         : activeTab === 0 && selectedLesson.sectionIdx === 0 && selectedLesson.lessonIdx === 2
@@ -496,6 +531,7 @@ export default function CourseDetailPage() {
                               const next = new Set(completedLessons).add('0-2');
                               setCompletedLessons(next);
                               setCompletedLessonsStorage(next);
+                              reportLessonCompleteToApi(childId ?? null, courseId, '0-2');
                               setSelectedLesson(null);
                             }
                           : activeTab === 0 && selectedLesson.sectionIdx === 1 && selectedLesson.lessonIdx === 0
@@ -503,6 +539,7 @@ export default function CourseDetailPage() {
                                 const next = new Set(completedLessons).add('1-0');
                                 setCompletedLessons(next);
                                 setCompletedLessonsStorage(next);
+                                reportLessonCompleteToApi(childId ?? null, courseId, '1-0');
                                 setSelectedLesson(null);
                               }
                             : activeTab === 0 && selectedLesson.sectionIdx === 1 && selectedLesson.lessonIdx === 1
@@ -510,6 +547,7 @@ export default function CourseDetailPage() {
                                   const next = new Set(completedLessons).add('1-1');
                                   setCompletedLessons(next);
                                   setCompletedLessonsStorage(next);
+                                  reportLessonCompleteToApi(childId ?? null, courseId, '1-1');
                                   setSelectedLesson(null);
                                 }
                               : activeTab === 0 && selectedLesson.sectionIdx === 1 && selectedLesson.lessonIdx === 2
@@ -517,6 +555,7 @@ export default function CourseDetailPage() {
                                     const next = new Set(completedLessons).add('1-2');
                                     setCompletedLessons(next);
                                     setCompletedLessonsStorage(next);
+                                    reportLessonCompleteToApi(childId ?? null, courseId, '1-2');
                                     setSelectedLesson(null);
                                   }
                                 : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 0
@@ -524,30 +563,26 @@ export default function CourseDetailPage() {
                                       const next = new Set(completedLessons).add('2-0');
                                       setCompletedLessons(next);
                                       setCompletedLessonsStorage(next);
+                                      reportLessonCompleteToApi(childId ?? null, courseId, '2-0');
                                       setSelectedLesson(null);
                                     }
-                                  : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 1
+                                    : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 1
                                     ? () => {
                                         const next = new Set(completedLessons).add('2-1');
                                         setCompletedLessons(next);
                                         setCompletedLessonsStorage(next);
+                                        reportLessonCompleteToApi(childId ?? null, courseId, '2-1');
                                         setSelectedLesson(null);
                                       }
-                                    : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 2
+                                    : activeTab === 0 && selectedLesson.sectionIdx === 3 && selectedLesson.lessonIdx === 0
                                       ? () => {
-                                          const next = new Set(completedLessons).add('2-2');
+                                          const next = new Set(completedLessons).add('3-0');
                                           setCompletedLessons(next);
                                           setCompletedLessonsStorage(next);
+                                          reportLessonCompleteToApi(childId ?? null, courseId, '3-0');
                                           setSelectedLesson(null);
                                         }
-                                      : activeTab === 0 && selectedLesson.sectionIdx === 2 && selectedLesson.lessonIdx === 3
-                                        ? () => {
-                                            const next = new Set(completedLessons).add('2-3');
-                                            setCompletedLessons(next);
-                                            setCompletedLessonsStorage(next);
-                                            setSelectedLesson(null);
-                                          }
-                                        : undefined
+                                      : undefined
                   }
                 />
               )}

@@ -3,17 +3,17 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const courses = [
-    { title: 'Matematika', titleUz: 'Matematika' },
-    { title: 'Ingliz tili', titleUz: 'Ingliz tili' },
-    { title: 'Rus tili', titleUz: 'Rus tili' },
-    { title: 'Maktabgacha matematika', titleUz: 'Maktabgacha matematika' },
-    { title: 'Mantiq', titleUz: 'Mantiq' },
-    { title: 'Moliyaviy savodxonlik', titleUz: 'Moliyaviy savodxonlik' },
-    { title: "Xotirani rivojlantirish", titleUz: "Xotirani rivojlantirish" },
-    { title: "Qaror qabul qilish ko'nikmasi", titleUz: "Qaror qabul qilish ko'nikmasi" },
-    { title: 'Geografiya', titleUz: 'Geografiya' },
-    { title: 'Mening tanam', titleUz: 'Mening tanam' },
+  const courses: { title: string; titleUz: string; totalTasks: number }[] = [
+    { title: 'Matematika', titleUz: 'Matematika', totalTasks: 98 },
+    { title: 'Ingliz tili', titleUz: 'Ingliz tili', totalTasks: 0 },
+    { title: 'Rus tili', titleUz: 'Rus tili', totalTasks: 0 },
+    { title: 'Maktabgacha matematika', titleUz: 'Maktabgacha matematika', totalTasks: 0 },
+    { title: 'Mantiq', titleUz: 'Mantiq', totalTasks: 0 },
+    { title: 'Moliyaviy savodxonlik', titleUz: 'Moliyaviy savodxonlik', totalTasks: 0 },
+    { title: "Xotirani rivojlantirish", titleUz: "Xotirani rivojlantirish", totalTasks: 0 },
+    { title: "Qaror qabul qilish ko'nikmasi", titleUz: "Qaror qabul qilish ko'nikmasi", totalTasks: 0 },
+    { title: 'Geografiya', titleUz: 'Geografiya', totalTasks: 0 },
+    { title: 'Mening tanam', titleUz: 'Mening tanam', totalTasks: 0 },
   ];
 
   await prisma.userCourse.deleteMany({});
@@ -24,6 +24,7 @@ async function main() {
       titleUz: c.titleUz,
       price: 0,
       orderIndex: i,
+      totalTasks: c.totalTasks,
     })),
   });
   console.log('Created courses:', courses.length);

@@ -54,6 +54,7 @@ model Course {
   titleUz     String?
   price       Float
   orderIndex  Int      @default(0)
+  totalTasks  Int      @default(0)
   userCourses UserCourse[]
 
   @@map("courses")

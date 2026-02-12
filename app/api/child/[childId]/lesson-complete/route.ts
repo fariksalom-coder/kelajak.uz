@@ -37,7 +37,10 @@ export async function POST(
     return NextResponse.json({ error: 'Bad request' }, { status: 400 });
   }
 
-  // Сохраняем очки и прогресс курса (процент по предмету/курсу)
+  const course = await prisma.course.findUnique({ where: { id: courseId }, select: { totalTasks: true } });
+  const totalTasks = course?.totalTasks ?? 0;
+
+  // Сохраняем очки и прогресс курса: progress = количество выполненных заданий (инкремент на 1)
   const [user, userCourse] = await prisma.$transaction([
     prisma.user.update({
       where: { id: childId },
@@ -46,17 +49,26 @@ export async function POST(
     }),
     prisma.userCourse.upsert({
       where: { userId_courseId: { userId: childId, courseId } },
-      create: { userId: childId, courseId, purchased: false, progress: 100 },
-      update: { progress: 100 },
+      create: { userId: childId, courseId, purchased: false, progress: 1 },
+      update: { progress: { increment: 1 } },
       select: { progress: true },
     }),
   ]);
+
+  let finalProgress = userCourse.progress;
+  if (totalTasks > 0 && userCourse.progress > totalTasks) {
+    await prisma.userCourse.update({
+      where: { userId_courseId: { userId: childId, courseId } },
+      data: { progress: totalTasks },
+    });
+    finalProgress = totalTasks;
+  }
 
   return NextResponse.json({
     ok: true,
     points: user.points,
     courseId,
-    courseProgress: userCourse.progress,
+    courseProgress: finalProgress,
   });
 }
 

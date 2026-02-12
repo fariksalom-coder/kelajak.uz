@@ -63,28 +63,48 @@ export default function ChildLayoutClient({
     return <div className="p-4">Loading...</div>;
   }
 
+  const navLinkClass = (active: boolean) =>
+    `flex flex-col items-center justify-center gap-0.5 py-2 px-4 rounded-xl min-w-[64px] transition-colors ${
+      active ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-800'
+    }`;
+
+  const NavIcon = ({ active, children }: { active: boolean; children: React.ReactNode }) => (
+    <span className="text-current">{children}</span>
+  );
+
+  const layoutBgStyle = {
+    background: 'linear-gradient(180deg, #93c5fd 0%, #60a5fa 40%, #3b82f6 100%)',
+    minHeight: '100vh',
+  };
+
   return (
     <ChildIdProvider childId={childId}>
-      <div className="flex flex-col min-h-[80vh]">
+      <div className="flex flex-col min-h-screen" style={layoutBgStyle}>
         {!isLesson && (
-          <nav className="sticky top-0 z-10 border-b bg-white flex justify-around py-2 shrink-0">
-            <Link
-              href={`${base}${linkSuffix}`}
-              className={`px-4 py-2 ${isMain ? 'text-blue-600 font-medium' : ''}`}
-            >
-              {t('main')}
+          <nav className="sticky top-0 z-10 bg-blue-900 border-b border-blue-800 shadow-[0_2px_10px_rgba(0,0,0,0.2)] flex justify-around items-stretch py-2 px-2">
+            <Link href={`${base}${linkSuffix}`} className={navLinkClass(isMain)}>
+              <NavIcon active={isMain}>
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                </svg>
+              </NavIcon>
+              <span className="text-xs font-medium">{t('main')}</span>
             </Link>
-            <Link
-              href={`${base}/stats${linkSuffix}`}
-              className={`px-4 py-2 ${isStats ? 'text-blue-600 font-medium' : ''}`}
-            >
-              {t('stats')}
+            <Link href={`${base}/stats${linkSuffix}`} className={navLinkClass(isStats)}>
+              <NavIcon active={isStats}>
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M4 19v-5h2v5H4zm5 0v-8h2v8H9zm5 0v-3h2v3h-2zm5 0v-6h2v6h-2z" />
+                </svg>
+              </NavIcon>
+              <span className="text-xs font-medium">{t('stats')}</span>
             </Link>
-            <Link
-              href={`${base}/profile${linkSuffix}`}
-              className={`px-4 py-2 ${isProfile ? 'text-blue-600 font-medium' : ''}`}
-            >
-              {t('profile')}
+            <Link href={`${base}/profile${linkSuffix}`} className={navLinkClass(isProfile)}>
+              <NavIcon active={isProfile}>
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+              </NavIcon>
+              <span className="text-xs font-medium">{t('profile')}</span>
             </Link>
           </nav>
         )}

@@ -37,13 +37,20 @@ export async function GET(
   );
 
   return NextResponse.json({
-    courses: courses.map((c) => ({
-      id: c.id,
-      title: c.title,
-      titleUz: c.titleUz ?? c.title,
-      price: String(c.price),
-      purchased: byCourse[c.id]?.purchased ?? false,
-      progress: byCourse[c.id]?.progress ?? 0,
-    })),
+    courses: courses.map((c) => {
+      const completedCount = byCourse[c.id]?.progress ?? 0;
+      const totalTasks = c.totalTasks ?? 0;
+      const progressPercent = totalTasks > 0 ? Math.min(100, Math.round((completedCount / totalTasks) * 100)) : 0;
+      return {
+        id: c.id,
+        title: c.title,
+        titleUz: c.titleUz ?? c.title,
+        price: String(c.price),
+        purchased: byCourse[c.id]?.purchased ?? false,
+        progress: progressPercent,
+        completedCount,
+        totalTasks,
+      };
+    }),
   });
 }

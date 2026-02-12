@@ -164,33 +164,33 @@ export default function ChildProfilePage() {
         <button
           type="button"
           onClick={openParentGate}
-          className="w-full py-3 text-left px-4 border rounded-lg hover:bg-gray-50"
+          className="w-full py-3 text-left px-4 bg-white border-2 border-blue-200 rounded-xl shadow-md hover:bg-blue-50 hover:border-blue-300 text-gray-800 font-medium"
         >
           {t('goToParent')}
         </button>
         <Link
           href={referralPath}
-          className="block w-full py-3 text-left px-4 border rounded-lg hover:bg-gray-50"
+          className="block w-full py-3 text-left px-4 bg-white border-2 border-blue-200 rounded-xl shadow-md hover:bg-blue-50 hover:border-blue-300 text-gray-800 font-medium"
         >
           {t('inviteFriend')}
         </Link>
         <Link
           href={contactPath}
-          className="block w-full py-3 text-left px-4 border rounded-lg hover:bg-gray-50"
+          className="block w-full py-3 text-left px-4 bg-white border-2 border-blue-200 rounded-xl shadow-md hover:bg-blue-50 hover:border-blue-300 text-gray-800 font-medium"
         >
           {t('contactAdmin')}
         </Link>
         <button
           type="button"
           onClick={openChangePassword}
-          className="w-full py-3 text-left px-4 border rounded-lg hover:bg-gray-50"
+          className="w-full py-3 text-left px-4 bg-white border-2 border-blue-200 rounded-xl shadow-md hover:bg-blue-50 hover:border-blue-300 text-gray-800 font-medium"
         >
           {t('changePassword')}
         </button>
         <button
           type="button"
           onClick={() => setLogoutConfirm(true)}
-          className="w-full py-3 text-left px-4 border rounded-lg hover:bg-red-50 text-red-600"
+          className="w-full py-3 text-left px-4 bg-white border-2 border-red-200 rounded-xl shadow-md hover:bg-red-50 hover:border-red-300 text-red-600 font-medium"
         >
           {t('logout')}
         </button>
