@@ -144,6 +144,22 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
   const [block3Task2ShowCongrats, setBlock3Task2ShowCongrats] = useState(false);
   const block3Task2Stage1OptionsRef = useRef<{ stage: number; options: number[] } | null>(null);
   const block3AliOrderRef = useRef<Record<number, number[]>>({});
+  const [isShortHeight, setIsShortHeight] = useState(false);
+  const [contentScale, setContentScale] = useState(1);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-height: 520px)');
+    const update = () => {
+      setIsShortHeight(mql.matches);
+      setContentScale(Math.min(1, window.innerHeight / 600));
+    };
+    update();
+    mql.addEventListener('change', update);
+    window.addEventListener('resize', update);
+    return () => {
+      mql.removeEventListener('change', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
   useEffect(() => {
     if (!isBlock3Task2 || block3Task2Stage !== 0 || block3Task2Selected !== 6) return;
     const t = setTimeout(() => {
@@ -2623,7 +2639,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
       </header>
 
       {/* Matn va ramka: matn va yulduz/tosh bloklari aralashmasin */}
-      <div className={`absolute left-0 right-0 top-14 sm:top-16 bottom-20 sm:bottom-24 z-10 flex flex-col px-4 pt-[1cm] ${isStarStone || isStarStoneMiddle || isShapes ? 'gap-[2.5cm]' : 'gap-[1cm]'}`}>
+      <div
+        className={`absolute left-0 right-0 top-14 sm:top-16 bottom-20 sm:bottom-24 z-10 flex flex-col px-4 ${isShortHeight ? 'pt-2' : 'pt-[1cm]'} ${isShortHeight ? 'gap-2' : (isStarStone || isStarStoneMiddle || isShapes ? 'gap-[2.5cm]' : 'gap-[1cm]')}`}
+        style={contentScale < 1 ? { transform: `scale(${contentScale})`, transformOrigin: 'top center' } : undefined}
+      >
         <div className="flex items-center justify-center gap-2 shrink-0">
           <button
             type="button"
@@ -2637,7 +2656,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
             </svg>
           </button>
-          <p className="text-white text-2xl sm:text-3xl md:text-4xl font-bold text-center drop-shadow">
+          <p className={`text-white font-bold text-center drop-shadow ${isShortHeight ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl md:text-4xl'}`}>
             {isShapes ? shapesPrompt : isStarStoneMiddle ? "O'rtadagi yulduzni tanla." : isStarStone ? (starStoneHorizontal ? (correctIndex === 0 ? "Toshdan CHAPDA joylashgan yulduzni tanla." : "Toshdan O'NGDA joylashgan yulduzni tanla.") : (correctIndex === 0 ? "Toshdan YUQORIDA joylashgan yulduzni tanla." : "Toshdan QUYIDA joylashgan yulduzni tanla.")) : isWords ? 'Mos keluvchi raqamlar ketma-ketligini tanlang.' : 'Nechta shirinlik bor? Raqamni tanlang.'}
           </p>
         </div>
@@ -2735,7 +2754,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
             </div>
           )
         ) : isWords ? (
-          <div className="flex-1 min-h-[180px] sm:min-h-[220px] -mt-[3.5cm] flex items-center justify-center min-w-0 px-4 relative">
+          <div className={`flex-1 min-h-[180px] sm:min-h-[220px] flex items-center justify-center min-w-0 px-4 relative ${isShortHeight ? 'mt-0' : '-mt-[3.5cm]'}`}>
             <div className="relative w-full max-w-2xl">
               {/* Ovoz tugmasi — to'rtburchakning yuqori chetida, ortasida, yarmi tashqarida */}
               <button
@@ -2754,9 +2773,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               <div className="rounded-3xl bg-white/95 shadow-xl px-6 py-8 sm:px-8 sm:py-10 flex items-center justify-center gap-[calc(0.75rem+0.5rem)] sm:gap-[calc(1rem+0.5rem)] pt-14 sm:pt-16">
                 {(stageConfig as { words: readonly string[] }).words.map((word, i) => (
                   <span key={i} className="flex items-center gap-[calc(0.75rem+0.5rem)] sm:gap-[calc(1rem+0.5rem)]">
-                    <span className="text-gray-800 font-bold text-2xl sm:text-4xl md:text-6xl">{word}</span>
+                    <span className={`text-gray-800 font-bold ${isShortHeight ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-4xl md:text-6xl'}`}>{word}</span>
                     {i < (stageConfig as { words: readonly string[] }).words.length - 1 && (
-                      <span className="text-purple-600 font-extrabold text-4xl sm:text-5xl md:text-6xl select-none" style={{ lineHeight: 1 }}>|</span>
+                      <span className={`text-purple-600 font-extrabold select-none ${isShortHeight ? 'text-2xl sm:text-3xl' : 'text-4xl sm:text-5xl md:text-6xl'}`} style={{ lineHeight: 1 }}>|</span>
                     )}
                   </span>
                 ))}
@@ -2765,12 +2784,12 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
           </div>
         ) : (
           <div
-            className="relative flex-1 min-h-[180px] sm:min-h-[220px] -mt-[2.5cm] overflow-visible bg-no-repeat bg-center bg-contain flex items-center justify-center gap-2 sm:gap-4 min-w-0"
+            className={`relative flex-1 min-h-[180px] sm:min-h-[220px] overflow-visible bg-no-repeat bg-center bg-contain flex items-center justify-center gap-2 sm:gap-4 min-w-0 ${isShortHeight ? 'mt-0' : '-mt-[2.5cm]'}`}
             style={{ backgroundImage: `url(${ramkaSrc})` }}
           >
             <div
               className="relative w-[45%] min-w-0 max-w-full aspect-[4/3] shrink-0 transition-transform duration-300"
-              style={{ transform: `translateX(-1cm) scale(${stage === 0 ? 1.1 : 0.65})` }}
+              style={{ transform: `translateX(${isShortHeight ? '-0.25rem' : '-1cm'}) scale(${stage === 0 ? 1.1 : 0.65})` }}
             >
               <Image
                 src={sweetsSrc}
@@ -2780,7 +2799,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 unoptimized
               />
             </div>
-            <span className="flex items-center gap-1 shrink-0 text-white font-bold drop-shadow" style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)', transform: 'translate(-3cm, -1cm)' }}>
+            <span className="flex items-center gap-1 shrink-0 text-white font-bold drop-shadow" style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)', transform: isShortHeight ? 'translate(-0.5rem, 0)' : 'translate(-3cm, -1cm)' }}>
               <span>=</span>
               <span>?</span>
             </span>
@@ -2792,7 +2811,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
       {!isStarStone && !isStarStoneMiddle && !isShapes && (
       <div
         className="absolute left-0 right-0 bottom-4 sm:bottom-6 z-10 flex items-center justify-center gap-4 sm:gap-6 px-4"
-        style={{ transform: isWords ? 'translateY(-1.5cm)' : 'translateY(0.5cm)' }}
+        style={{ transform: isWords && isShortHeight ? 'translateY(0)' : (isWords ? 'translateY(-1.5cm)' : 'translateY(0.5cm)') }}
       >
         {answerOptions.map((num, index) => {
           const isWrong = wrongIndices.has(index) || (correctSelected && index !== correctIndex);
@@ -2814,7 +2833,9 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               disabled={isWrong || correctSelected}
               className={`relative font-bold text-5xl sm:text-6xl md:text-7xl text-blue-900 flex items-center justify-center overflow-hidden bg-no-repeat shadow-lg transition-all duration-300 ${
                 isWords
-                  ? 'w-72 h-48 sm:w-[21rem] sm:h-[13.5rem] md:w-96 md:h-60 rounded-xl bg-contain bg-center'
+                  ? isShortHeight
+                    ? 'w-52 h-36 sm:w-56 sm:h-40 rounded-xl bg-contain bg-center'
+                    : 'w-72 h-48 sm:w-[21rem] sm:h-[13.5rem] md:w-96 md:h-60 rounded-xl bg-contain bg-center'
                   : 'w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 rounded-full bg-cover bg-center'
               } ${isWrong ? 'opacity-50 cursor-default' : isCorrectAndSelected ? 'scale-[1.25]' : 'hover:scale-105 active:scale-95'}`}
               style={{ backgroundImage: `url(${knopkaSrc})` }}
