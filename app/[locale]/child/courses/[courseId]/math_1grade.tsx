@@ -1,13 +1,22 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
-import TaskScreen from '@/components/lesson/TaskScreen';
 import { useChildId } from '@/contexts/ChildIdContext';
+
+const TaskScreen = dynamic(() => import('@/components/lesson/TaskScreen'), {
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+      <div className="h-12 w-12 animate-spin rounded-full border-4 border-sky-500 border-t-transparent" aria-hidden />
+    </div>
+  ),
+});
 import { useLocale } from 'next-intl';
 import { MATH_TAB0_SECTIONS } from './math-1grade-data/sections-tab0';
 import { MATH_TAB1_SECTIONS } from './math-1grade-data/sections-tab1';

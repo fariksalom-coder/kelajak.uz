@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -9,7 +10,11 @@ import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
 import SpeakerButton from '@/components/lesson/SpeakerButton';
 import { useChildId } from '@/contexts/ChildIdContext';
-import ReadingRussian1 from './reading_russian_1/reading_russian_1';
+
+const ReadingRussian1 = dynamic(
+  () => import('./reading_russian_1/reading_russian_1'),
+  { ssr: false }
+);
 
 const TEXTS = {
   start: 'Boshlash',

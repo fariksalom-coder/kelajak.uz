@@ -84,13 +84,20 @@ export async function GET(
     progress: progressByCourse[c.id] ?? 0,
   }));
 
-  return NextResponse.json({
-    points,
-    level: currentLevel.name,
-    levelProgress: maxInLevel > 0 ? Math.round((progressInLevel / maxInLevel) * 100) : 100,
-    pointsInLevel: progressInLevel,
-    pointsToNextLevel: maxInLevel,
-    weeklyActivity: activityByDay,
-    courseProgress,
-  });
+  return NextResponse.json(
+    {
+      points,
+      level: currentLevel.name,
+      levelProgress: maxInLevel > 0 ? Math.round((progressInLevel / maxInLevel) * 100) : 100,
+      pointsInLevel: progressInLevel,
+      pointsToNextLevel: maxInLevel,
+      weeklyActivity: activityByDay,
+      courseProgress,
+    },
+    {
+      headers: {
+        'Cache-Control': 'private, max-age=60, stale-while-revalidate=120',
+      },
+    }
+  );
 }

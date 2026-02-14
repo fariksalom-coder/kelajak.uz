@@ -1099,7 +1099,6 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               fill
               className="object-contain"
               sizes="(max-width: 768px) 90vw, 28rem"
-              unoptimized
             />
           </div>
           <button
@@ -1252,7 +1251,6 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                   fill
                   className="object-contain"
                   sizes="(max-width: 768px) 90vw, 28rem"
-                  unoptimized
                 />
               </div>
               <button
@@ -2664,7 +2662,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
         ) : isStarStoneMiddle ? (
           <div className="flex-1 min-h-[240px] sm:min-h-[280px] flex flex-col items-center justify-center gap-3 sm:gap-4 min-w-0 px-4">
             <div className="relative z-0 w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 shrink-0 overflow-visible scale-[2.5] origin-center">
-              <Image src={stoneSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 8rem, 9rem" />
+              <Image src={stoneSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 8rem, 9rem" />
             </div>
             <button
               type="button"
@@ -2672,10 +2670,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               disabled={wrongIndices.has(0) || correctSelected}
               className={`relative z-10 w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
             >
-              <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
+              <Image src={starSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 9rem, 10rem" />
             </button>
             <div className="relative z-0 w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 shrink-0 overflow-visible scale-[2.5] origin-center">
-              <Image src={stoneSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 8rem, 9rem" />
+              <Image src={stoneSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 8rem, 9rem" />
             </div>
             <button
               type="button"
@@ -2683,7 +2681,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
               disabled={wrongIndices.has(1) || correctSelected}
               className={`relative z-10 w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
             >
-              <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
+              <Image src={starSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 9rem, 10rem" />
             </button>
           </div>
         ) : isStarStone ? (
@@ -2695,10 +2693,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 disabled={wrongIndices.has(0) || correctSelected}
                 className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
-                <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
+                <Image src={starSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 10rem, 11rem" />
               </button>
               <div className="relative z-0 w-16 h-16 sm:w-28 sm:h-28 md:w-36 md:h-36 shrink-0 overflow-visible scale-[2] sm:scale-[3] origin-center">
-                <Image src={stoneSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
+                <Image src={stoneSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 9rem, 10rem" />
               </div>
               <button
                 type="button"
@@ -2706,7 +2704,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 disabled={wrongIndices.has(1) || correctSelected}
                 className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
-                <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
+                <Image src={starSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 10rem, 11rem" />
               </button>
             </div>
           ) : (
@@ -2717,10 +2715,10 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 disabled={wrongIndices.has(0) || correctSelected}
                 className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(0) || (correctSelected && correctIndex !== 0)) ? 'opacity-50' : correctSelected && correctIndex === 0 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
-                <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
+                <Image src={starSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 10rem, 11rem" />
               </button>
               <div className="relative z-0 w-16 h-16 sm:w-28 sm:h-28 md:w-36 md:h-36 shrink-0 overflow-visible scale-[2] sm:scale-[3] origin-center">
-                <Image src={stoneSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 9rem, 10rem" />
+                <Image src={stoneSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 9rem, 10rem" />
               </div>
               <button
                 type="button"
@@ -2728,7 +2726,7 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 disabled={wrongIndices.has(1) || correctSelected}
                 className={`relative z-10 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 shrink-0 overflow-hidden transition-all duration-300 ${(wrongIndices.has(1) || (correctSelected && correctIndex !== 1)) ? 'opacity-50' : correctSelected && correctIndex === 1 ? 'scale-110' : 'hover:scale-105 active:scale-95'}`}
               >
-                <Image src={starSrc} alt="" fill className="object-contain" unoptimized sizes="(max-width:768px) 10rem, 11rem" />
+                <Image src={starSrc} alt="" fill className="object-contain" sizes="(max-width:768px) 10rem, 11rem" />
               </button>
             </div>
           )
@@ -2774,7 +2772,6 @@ export default function TaskScreen({ onBack, imageBaseUrl, childId, courseId, le
                 alt=""
                 fill
                 className="object-contain"
-                unoptimized
               />
             </div>
           </div>

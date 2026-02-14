@@ -39,23 +39,30 @@ export async function GET(
       userCourses.map((uc) => [uc.courseId, { purchased: uc.purchased, progress: uc.progress }])
     );
 
-    return NextResponse.json({
-      courses: courses.map((c) => {
-        const completedCount = byCourse[c.id]?.progress ?? 0;
-        const totalTasks = c.totalTasks ?? 0;
-        const progressPercent = totalTasks > 0 ? Math.min(100, Math.round((completedCount / totalTasks) * 100)) : 0;
-        return {
-          id: c.id,
-          title: c.title,
-          titleUz: c.titleUz ?? c.title,
-          price: String(c.price),
-          purchased: byCourse[c.id]?.purchased ?? false,
-          progress: progressPercent,
-          completedCount,
-          totalTasks,
-        };
-      }),
-    });
+    return NextResponse.json(
+      {
+        courses: courses.map((c) => {
+          const completedCount = byCourse[c.id]?.progress ?? 0;
+          const totalTasks = c.totalTasks ?? 0;
+          const progressPercent = totalTasks > 0 ? Math.min(100, Math.round((completedCount / totalTasks) * 100)) : 0;
+          return {
+            id: c.id,
+            title: c.title,
+            titleUz: c.titleUz ?? c.title,
+            price: String(c.price),
+            purchased: byCourse[c.id]?.purchased ?? false,
+            progress: progressPercent,
+            completedCount,
+            totalTasks,
+          };
+        }),
+      },
+      {
+        headers: {
+          'Cache-Control': 'private, max-age=60, stale-while-revalidate=120',
+        },
+      }
+    );
   } catch (err) {
     console.error('[GET /api/child/[childId]/courses]', err);
     return NextResponse.json(

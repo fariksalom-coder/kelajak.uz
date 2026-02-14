@@ -38,9 +38,16 @@ export async function GET(
   if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const { referrals, ...rest } = user;
-  return NextResponse.json({
-    ...rest,
-    referralCode: rest.referralCode ?? null,
-    referredUsers: referrals,
-  });
+  return NextResponse.json(
+    {
+      ...rest,
+      referralCode: rest.referralCode ?? null,
+      referredUsers: referrals,
+    },
+    {
+      headers: {
+        'Cache-Control': 'private, max-age=60, stale-while-revalidate=120',
+      },
+    }
+  );
 }
