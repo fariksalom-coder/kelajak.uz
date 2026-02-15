@@ -1,8 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
+
+/** Rasm papkasi: public/courses/finance/ — 1.png, 2.png, ... 13.png (har bir bo'lim uchun) */
+const FINANCE_IMAGE_BASE = '/courses/finance';
 
 type CourseItem = {
   id: string;
@@ -14,16 +18,34 @@ type CourseItem = {
 };
 
 const FINANCE_COMPLETED_KEY = 'zukko_finance_completed';
+type CompletedPart = number | string;
 
-function getCompletedChapters(): number[] {
+function getCompletedParts(): CompletedPart[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(FINANCE_COMPLETED_KEY);
-    const arr = raw ? (JSON.parse(raw) as number[]) : [];
-    return Array.isArray(arr) ? arr : [];
+    const arr = raw ? (JSON.parse(raw) as unknown) : [];
+    if (!Array.isArray(arr)) return [];
+    const hasStrings = arr.some((x) => typeof x === 'string');
+    if (hasStrings) return arr as CompletedPart[];
+    const nums = arr as number[];
+    const migrated: CompletedPart[] = [];
+    for (const n of nums) {
+      if (n === 1) {
+        if (!migrated.includes('1_slides')) migrated.push('1_slides');
+        if (!migrated.includes('1_test')) migrated.push('1_test');
+      } else if (typeof n === 'number' && n >= 2 && n <= 13) {
+        migrated.push(n);
+      }
+    }
+    return migrated;
   } catch {
     return [];
   }
+}
+
+function isPartCompleted(parts: CompletedPart[], part: CompletedPart): boolean {
+  return parts.includes(part);
 }
 
 /** 13 mavzu, har bir qatorda: mavzu + test */
@@ -54,10 +76,14 @@ export default function FinanceCoursePage({
 }) {
   const courseTitle = course.titleUz ?? course.title;
   const prefix = `/${locale}`;
-  const [completedChapters, setCompletedChapters] = useState<number[]>([]);
+  const [completedParts, setCompletedParts] = useState<CompletedPart[]>([]);
+  const [imageFailed, setImageFailed] = useState<Set<number>>(new Set());
+  const onImageError = useCallback((id: number) => {
+    setImageFailed((prev) => new Set(prev).add(id));
+  }, []);
 
   useEffect(() => {
-    const refresh = () => setCompletedChapters(getCompletedChapters());
+    const refresh = () => setCompletedParts(getCompletedParts());
     refresh();
     window.addEventListener('focus', refresh);
     return () => window.removeEventListener('focus', refresh);
@@ -65,7 +91,10 @@ export default function FinanceCoursePage({
 
   const isChapterUnlocked = (chapterId: number) => {
     if (chapterId === 1) return true;
-    return completedChapters.includes(chapterId - 1);
+    if (chapterId === 2) {
+      return isPartCompleted(completedParts, '1_slides') && isPartCompleted(completedParts, '1_test');
+    }
+    return isPartCompleted(completedParts, chapterId - 1);
   };
 
   return (
@@ -88,6 +117,14 @@ export default function FinanceCoursePage({
       <div className="space-y-5">
         {FINANCE_TOPICS.map(({ id, topic }) => {
           const unlocked = isChapterUnlocked(id);
+          const materialDone =
+            id === 1
+              ? isPartCompleted(completedParts, '1_slides')
+              : isPartCompleted(completedParts, id);
+          const testDone =
+            id === 1
+              ? isPartCompleted(completedParts, '1_test')
+              : isPartCompleted(completedParts, id);
           return (
             <div
               key={id}
@@ -99,15 +136,34 @@ export default function FinanceCoursePage({
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-start">
-                {/* Mavzu: ochiq bo'lsa — test sahifasiga link (mavzu + test bir xil bo'lim) */}
-                <div className="flex flex-col items-center">
+                {/* Mavzu */}
+                <div className="flex flex-col items-center relative">
+                  {materialDone && (
+                    <span
+                      className="absolute -top-1 -right-1 sm:right-[calc(50%-100px-8px)] z-10 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white shadow"
+                      aria-hidden
+                    >
+                      ✓
+                    </span>
+                  )}
                   {unlocked ? (
                     <Link
                       href={`${prefix}/child/courses/${course.id}/finance/test/${id}${linkSuffix}`}
                       className="w-full max-w-[200px] flex flex-col items-center group"
                     >
-                      <div className="w-full aspect-[2/1] rounded-xl border-2 border-green-500 bg-white flex items-center justify-center shadow-sm group-hover:border-green-600 group-hover:bg-green-50/50 transition-colors">
-                        <span className="text-3xl font-bold text-gray-700">{id}</span>
+                      <div className="w-full aspect-[2/1] rounded-xl border-2 border-green-500 bg-white flex items-center justify-center overflow-hidden shadow-sm group-hover:border-green-600 group-hover:bg-green-50/50 transition-colors relative">
+                        {imageFailed.has(id) ? (
+                          <span className="text-3xl font-bold text-gray-700">{id}</span>
+                        ) : (
+                          <Image
+                            src={`${FINANCE_IMAGE_BASE}/${id}.png`}
+                            alt=""
+                            fill
+                            className="object-cover"
+                            sizes="200px"
+                            onError={() => onImageError(id)}
+                          />
+                        )}
                       </div>
                       <span className="mt-2 text-center font-medium text-gray-800 text-base sm:text-lg whitespace-nowrap">
                         {topic}
@@ -115,8 +171,19 @@ export default function FinanceCoursePage({
                     </Link>
                   ) : (
                     <>
-                      <div className="w-full aspect-[2/1] max-w-[200px] rounded-xl border-2 border-green-500 bg-white flex items-center justify-center shadow-sm">
-                        <span className="text-3xl font-bold text-gray-700">{id}</span>
+                      <div className="w-full aspect-[2/1] max-w-[200px] rounded-xl border-2 border-green-500 bg-white flex items-center justify-center overflow-hidden shadow-sm relative">
+                        {imageFailed.has(id) ? (
+                          <span className="text-3xl font-bold text-gray-700">{id}</span>
+                        ) : (
+                          <Image
+                            src={`${FINANCE_IMAGE_BASE}/${id}.png`}
+                            alt=""
+                            fill
+                            className="object-cover"
+                            sizes="200px"
+                            onError={() => onImageError(id)}
+                          />
+                        )}
                       </div>
                       <span className="mt-2 text-center font-medium text-gray-800 text-base sm:text-lg whitespace-nowrap">
                         {topic}
@@ -124,11 +191,23 @@ export default function FinanceCoursePage({
                     </>
                   )}
                 </div>
-                {/* Test: ochiq bo'lsa link, yopiq bo'lsa zamok rasm */}
-                <div className="flex flex-col items-center">
+                {/* Test */}
+                <div className="flex flex-col items-center relative">
+                  {testDone && (
+                    <span
+                      className="absolute -top-1 -right-1 sm:right-[calc(50%-100px-8px)] z-10 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white shadow"
+                      aria-hidden
+                    >
+                      ✓
+                    </span>
+                  )}
                   {unlocked ? (
                     <Link
-                      href={`${prefix}/child/courses/${course.id}/finance/test/${id}${linkSuffix}`}
+                      href={
+                        id === 1
+                          ? `${prefix}/child/courses/${course.id}/finance/test/1${linkSuffix ? linkSuffix + '&part=test' : '?part=test'}`
+                          : `${prefix}/child/courses/${course.id}/finance/test/${id}${linkSuffix}`
+                      }
                       className="w-full max-w-[200px] flex flex-col items-center group"
                     >
                       <div className="w-full aspect-[2/1] rounded-xl border-2 border-sky-400 bg-white flex items-center justify-center shadow-sm group-hover:border-sky-500 group-hover:bg-sky-50/50 transition-colors">

@@ -4,25 +4,48 @@ import { Suspense } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
+import Chapter1Gallery from '../Chapter1Gallery';
+import Chapter1TestQuiz from '../Chapter1TestQuiz';
 
 const STORAGE_KEY = 'zukko_finance_completed';
+export type CompletedPart = number | string;
 
-function getCompleted(): number[] {
+function getCompletedParts(): CompletedPart[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    const arr = raw ? (JSON.parse(raw) as number[]) : [];
-    return Array.isArray(arr) ? arr : [];
+    const arr = raw ? (JSON.parse(raw) as unknown) : [];
+    if (!Array.isArray(arr)) return [];
+    const hasStrings = arr.some((x) => typeof x === 'string');
+    if (hasStrings) return arr as CompletedPart[];
+    const nums = arr as number[];
+    const migrated: CompletedPart[] = [];
+    for (const n of nums) {
+      if (n === 1) {
+        if (!migrated.includes('1_slides')) migrated.push('1_slides');
+        if (!migrated.includes('1_test')) migrated.push('1_test');
+      } else if (typeof n === 'number' && n >= 2 && n <= 13) {
+        migrated.push(n);
+      }
+    }
+    return migrated;
   } catch {
     return [];
   }
 }
 
-function setCompleted(chapters: number[]) {
+function setCompletedParts(parts: CompletedPart[]) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(chapters));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
   } catch {
     // ignore
+  }
+}
+
+function addCompletedPart(part: CompletedPart) {
+  const parts = getCompletedParts();
+  if (!parts.includes(part)) {
+    setCompletedParts([...parts, part].sort((a, b) => String(a).localeCompare(String(b))));
   }
 }
 
@@ -38,10 +61,17 @@ function FinanceTestContent() {
   const backUrl = courseId ? `${prefix}/child/courses/${courseId}${linkSuffix}` : `${prefix}/child${linkSuffix}`;
 
   const handleComplete = () => {
-    const completed = getCompleted();
-    if (!completed.includes(chapterId)) {
-      setCompleted([...completed, chapterId].sort((a, b) => a - b));
-    }
+    addCompletedPart(chapterId);
+    router.push(backUrl);
+  };
+
+  const handleCompleteSlides = () => {
+    addCompletedPart('1_slides');
+    router.push(backUrl);
+  };
+
+  const handleCompleteTest = () => {
+    addCompletedPart('1_test');
     router.push(backUrl);
   };
 
@@ -66,6 +96,21 @@ function FinanceTestContent() {
           Kursga qaytish
         </Link>
       </main>
+    );
+  }
+
+  if (chapterId === 1) {
+    const showQuiz = searchParams.get('part') === 'test';
+    const testUrl = `${prefix}/child/courses/${courseId}/finance/test/1${linkSuffix ? linkSuffix + '&part=test' : '?part=test'}`;
+    if (showQuiz) {
+      return <Chapter1TestQuiz backUrl={backUrl} onComplete={handleCompleteTest} />;
+    }
+    return (
+      <Chapter1Gallery
+        backUrl={backUrl}
+        testUrl={testUrl}
+        onCompleteSlides={handleCompleteSlides}
+      />
     );
   }
 
