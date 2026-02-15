@@ -118,7 +118,10 @@ export default function Chapter1TestQuiz({
   const selectedAnswer = answers[step];
   const isLastQuestion = step === TOTAL_QUESTIONS - 1;
 
-  const correctCount = answers.reduce((sum, a, i) => sum + (a === CHAPTER1_QUESTIONS[i].correctIndex ? 1 : 0), 0);
+  const correctCount = answers.reduce<number>(
+    (sum, a, i) => sum + (a === CHAPTER1_QUESTIONS[i].correctIndex ? 1 : 0),
+    0
+  );
   const passed = finished && correctCount >= PASS_THRESHOLD;
 
   const handleSelect = (optionIndex: number) => {
