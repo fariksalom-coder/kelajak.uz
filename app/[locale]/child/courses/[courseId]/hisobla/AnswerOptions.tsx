@@ -8,12 +8,11 @@ const CARD_CLASS =
 export function QuestionCard({ question }: { question: string }) {
   return (
     <div
-      className={`${CARD_CLASS} leading-tight md:min-w-[140px] md:min-h-[80px] md:px-6 md:py-4 md:text-[6rem]`}
+      className={`${CARD_CLASS} leading-tight text-[clamp(1.5rem,9vw,6rem)] max-md:!text-[clamp(0.75rem,4.5vw,3rem)] md:min-w-[140px] md:min-h-[80px] md:px-6 md:py-4 md:!text-[6rem]`}
       style={{
         minWidth: 'clamp(72px, 26vw, 140px)',
         minHeight: 'clamp(48px, 16vw, 80px)',
         padding: 'clamp(0.375rem, 2vw, 1.5rem) clamp(0.5rem, 2.5vw, 1.5rem)',
-        fontSize: 'clamp(1.5rem, 9vw, 6rem)',
       }}
       data-card="question"
     >
