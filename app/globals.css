@@ -1,6 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-hisobla {
+  font-family: 'Nunito', sans-serif;
+}
 
 :root {
   --foreground: #0a0a0a;
@@ -129,4 +135,19 @@ body {
 
 .animate-blink {
   animation: blink 1s step-end infinite;
+}
+
+@keyframes trailFade {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.6);
+  }
+}
+
+.hero-trail {
+  animation: trailFade 800ms ease-out forwards;
 }

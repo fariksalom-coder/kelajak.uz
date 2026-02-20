@@ -10,6 +10,7 @@ async function main() {
     { title: 'Maktabgacha matematika', titleUz: 'Maktabgacha matematika', totalTasks: 0 },
     { title: 'Mantiq', titleUz: 'Mantiq', totalTasks: 0 },
     { title: 'Moliyaviy savodxonlik', titleUz: 'Moliyaviy savodxonlik', totalTasks: 0 },
+    { title: 'Hisobla va uch', titleUz: 'Hisobla va uch', totalTasks: 0 },
     { title: "Xotirani rivojlantirish", titleUz: "Xotirani rivojlantirish", totalTasks: 0 },
     { title: "Qaror qabul qilish ko'nikmasi", titleUz: "Qaror qabul qilish ko'nikmasi", totalTasks: 0 },
     { title: 'Geografiya', titleUz: 'Geografiya', totalTasks: 0 },

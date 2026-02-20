@@ -58,6 +58,9 @@ export default function ChildLayoutClient({
   const isStats = pathname.includes('/stats');
   const isProfile = pathname.includes('/profile');
   const isLesson = pathname.includes('/lesson/');
+  const isFinanceTest = pathname.includes('/finance/test');
+  const isMathTask = pathname.includes('/courses/') && (searchParams.get('lesson') != null || searchParams.get('section') != null);
+  const showTopNav = !isLesson && !isFinanceTest && !isMathTask;
 
   if (role === 'PARENT' && !childId) {
     return <div className="p-4">Loading...</div>;
@@ -80,7 +83,7 @@ export default function ChildLayoutClient({
   return (
     <ChildIdProvider childId={childId}>
       <div className="flex flex-col min-h-screen" style={layoutBgStyle}>
-        {!isLesson && (
+        {showTopNav && (
           <nav className="sticky top-0 z-10 bg-blue-900 border-b border-blue-800 shadow-[0_2px_10px_rgba(0,0,0,0.2)] flex justify-around items-stretch py-2 px-2">
             <Link href={`${base}${linkSuffix}`} className={navLinkClass(isMain)}>
               <NavIcon active={isMain}>

@@ -8,6 +8,7 @@ import { useLocale } from 'next-intl';
 import Math1Grade from './math_1grade';
 import RussianCoursePage from './russian_course';
 import FinanceCoursePage from './finance_course';
+import HisoblaCoursePage from './hisobla_course';
 
 type CourseItem = {
   id: string;
@@ -66,6 +67,8 @@ export default function CourseDetailPage() {
     return n.includes('moliyaviy') || n.includes('savodxonlik') || n.includes('moliya') || n.includes('financial');
   });
   const isMoliyaviy = financeCourse != null && course.id === financeCourse.id;
+  const isHisobla =
+    courseName.includes('hisobla') && courseName.includes('uch');
 
   if (isMatematika) {
     return <Math1Grade />;
@@ -84,6 +87,16 @@ export default function CourseDetailPage() {
   if (isMoliyaviy) {
     return (
       <FinanceCoursePage
+        course={course}
+        locale={locale}
+        linkSuffix={linkSuffix}
+      />
+    );
+  }
+
+  if (isHisobla) {
+    return (
+      <HisoblaCoursePage
         course={course}
         locale={locale}
         linkSuffix={linkSuffix}

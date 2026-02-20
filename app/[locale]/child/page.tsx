@@ -30,11 +30,12 @@ const CARD_COLORS = [
   'bg-violet-100',
 ];
 
-/** Только математика и финансовая грамотность открыты, остальные — «Скоро». */
+/** Только математика, финансовая грамотность и Hisobla va uch открыты, остальные — «Скоро». */
 function isCourseUnlocked(c: CourseItem): boolean {
   const name = (c.titleUz ?? c.title).toLowerCase();
   if (name.includes('matematika') && !name.includes('maktabgacha')) return true;
   if (name.includes('moliyaviy') || name.includes('savodxonlik')) return true;
+  if (name.includes('hisobla') && name.includes('uch')) return true;
   return false;
 }
 
@@ -44,6 +45,7 @@ function getCourseIconPath(c: CourseItem): string | null {
   if (name.includes('matematika') && !name.includes('maktabgacha')) return '/images/courses/math.png';
   if (name.includes('maktabgacha')) return '/images/courses/maktabgachamatematika.png';
   if (name.includes('moliyaviy') || name.includes('savodxonlik')) return '/images/courses/finance.png';
+  if (name.includes('hisobla') && name.includes('uch')) return null; // add /images/courses/hisobla.png when ready
   if (name.includes('rus tili') || name.includes('русский')) return '/images/courses/russian.png';
   if (name.includes('ingliz') || name.includes('english')) return '/images/courses/english.png';
   if (name.includes('mantiq')) return '/images/courses/logic.png';
@@ -68,15 +70,16 @@ export default function ChildMainPage() {
 
   const courseTitle = (c: CourseItem) => c.titleUz ?? c.title;
 
-  /** Порядок на главной: математика → финансовая грамотность → русский → английский → остальные → дошкольная математика вниз */
+  /** Порядок на главной: математика → финансовая грамотность → Hisobla va uch → русский → английский → остальные → дошкольная математика вниз */
   const courseOrderKey = (c: CourseItem): number => {
     const name = (c.titleUz ?? c.title).toLowerCase();
-    if (name.includes('maktabgacha') || name.includes('дошкольн') || name.includes('preschool')) return 5;
+    if (name.includes('maktabgacha') || name.includes('дошкольн') || name.includes('preschool')) return 6;
     if (name.includes('matematika') || name.includes('математика')) return 0;
     if (name.includes('moliyaviy') || name.includes('savodxonlik') || name.includes('финанс') || name.includes('financial')) return 1;
-    if (name.includes('rus tili') || name.includes('русский') || name.includes('russian')) return 2;
-    if (name.includes('ingliz') || name.includes('английский') || name.includes('english')) return 3;
-    return 4;
+    if (name.includes('hisobla') && name.includes('uch')) return 2;
+    if (name.includes('rus tili') || name.includes('русский') || name.includes('russian')) return 3;
+    if (name.includes('ingliz') || name.includes('английский') || name.includes('english')) return 4;
+    return 5;
   };
 
   const sortCourses = (list: CourseItem[]) =>
@@ -151,7 +154,7 @@ export default function ChildMainPage() {
   };
 
   const renderCourseGrid = (list: CourseItem[], startColorIndex: number) => (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {list.map((c, i) => {
         const bgPath = getCourseIconPath(c);
         const fallbackColor = CARD_COLORS[(startColorIndex + i) % CARD_COLORS.length];

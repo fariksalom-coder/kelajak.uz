@@ -189,15 +189,6 @@ export default function Chapter1Gallery(props: {
       >
         <span className="text-xl leading-none">←</span>
       </Link>
-      {testUrl ? (
-        <Link
-          href={testUrl}
-          className="absolute top-4 right-4 z-10 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm shadow-md"
-          aria-label="Testni boshlash"
-        >
-          Testni boshlash
-        </Link>
-      ) : null}
 
       <div className={'relative w-full ' + (isSpecialLayout ? 'max-w-5xl' : 'max-w-3xl')}>
         {isTextSlide15 ? (
@@ -455,15 +446,6 @@ export default function Chapter1Gallery(props: {
             </div>
             {currentIndex === CHAPTER1_IMAGES.length - 1 && (
               <div className="flex flex-wrap justify-center gap-3 mt-4 w-full">
-                {testUrl ? (
-                  <Link
-                    href={testUrl}
-                    className="px-6 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg shadow-md transition-colors"
-                    aria-label="Testni boshlash"
-                  >
-                    Testni boshlash
-                  </Link>
-                ) : null}
                 {onCompleteSlides ? (
                   <button
                     type="button"
