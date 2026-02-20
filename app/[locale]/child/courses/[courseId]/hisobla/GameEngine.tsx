@@ -147,6 +147,7 @@ export function GameEngine({
     setIsTaskMoving(true);
     isTaskMovingRef.current = true;
     collidedRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- init once per mode, currentRound is initial value only
   }, [mode]);
 
   /** Единый игровой цикл: движение карточки влево + отложенный спавн следующей задачи */

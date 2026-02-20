@@ -201,6 +201,8 @@ function GameScreen({
   const [tilt, setTilt] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [trails, setTrails] = useState<TrailItem[]>([]);
+  const [isPortrait, setIsPortrait] = useState(false);
+  const [heroOffsetBounds, setHeroOffsetBounds] = useState({ min: -280, max: 280 });
   const imageOffsetYRef = useRef(0);
   const heroRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
@@ -215,9 +217,6 @@ function GameScreen({
   const heroOffsetBoundsRef = useRef(heroOffsetBounds);
   trailsCountRef.current = trails.length;
   heroOffsetBoundsRef.current = heroOffsetBounds;
-
-  const [isPortrait, setIsPortrait] = useState(false);
-  const [heroOffsetBounds, setHeroOffsetBounds] = useState({ min: -280, max: 280 });
   useEffect(() => {
     const check = () => setIsPortrait(window.innerHeight > window.innerWidth);
     check();
