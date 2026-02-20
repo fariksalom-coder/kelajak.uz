@@ -8,7 +8,13 @@ const CARD_CLASS =
 export function QuestionCard({ question }: { question: string }) {
   return (
     <div
-      className={`${CARD_CLASS} min-w-[140px] min-h-[80px] px-6 py-4 text-[6rem] leading-tight`}
+      className={`${CARD_CLASS} leading-tight md:min-w-[140px] md:min-h-[80px] md:px-6 md:py-4 md:text-[6rem]`}
+      style={{
+        minWidth: 'clamp(72px, 26vw, 140px)',
+        minHeight: 'clamp(48px, 16vw, 80px)',
+        padding: 'clamp(0.375rem, 2vw, 1.5rem) clamp(0.5rem, 2.5vw, 1.5rem)',
+        fontSize: 'clamp(1.5rem, 9vw, 6rem)',
+      }}
       data-card="question"
     >
       {question}
@@ -34,9 +40,15 @@ export function OptionCard({
       ref={refCallback}
       data-value={value}
       data-correct={isCorrect}
-      className={`${CARD_CLASS} min-w-[100px] min-h-[72px] px-5 py-3 text-[4rem] leading-tight transition-all duration-300 ${
+      className={`${CARD_CLASS} leading-tight transition-all duration-300 md:min-w-[100px] md:min-h-[72px] md:px-5 md:py-3 md:text-[4rem] ${
         flashWrong ? 'bg-red-200 border-red-400' : ''
       } ${highlightCorrect ? '!bg-green-500 !border-green-600 text-white scale-[1.05]' : ''}`}
+      style={{
+        minWidth: 'clamp(56px, 20vw, 100px)',
+        minHeight: 'clamp(44px, 14vw, 72px)',
+        padding: 'clamp(0.25rem, 1.5vw, 0.75rem) clamp(0.375rem, 2vw, 1.25rem)',
+        fontSize: 'clamp(1.25rem, 7vw, 4rem)',
+      }}
     >
       {value}
     </div>
@@ -60,15 +72,14 @@ export function AnswerOptions({
 }: AnswerOptionsProps) {
   return (
     <div
-      className="fixed left-0 top-1/2 z-[6] flex items-center pointer-events-none"
+      className="fixed left-0 top-1/2 z-[6] flex items-center pointer-events-none gap-[clamp(0.5rem,3vw,2rem)] md:gap-[calc(1.5rem+4cm)] lg:gap-[calc(1.5rem+8cm)]"
       style={{
         transform: `translateY(-50%) translateX(${cardOffsetX}px)`,
         willChange: 'transform',
-        gap: 'calc(1.5rem + 8cm)',
       }}
     >
       <QuestionCard question={task.question} />
-      <div className="flex flex-col" style={{ gap: 'calc(3rem + 3cm)' }}>
+      <div className="flex flex-col gap-[clamp(0.375rem,2vw,1.5rem)] md:gap-[calc(3rem+3cm)]">
         {task.options.map((value, i) => (
           <OptionCard
             key={`${task.question}-${i}-${value}`}
