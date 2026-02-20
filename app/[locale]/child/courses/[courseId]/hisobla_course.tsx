@@ -202,6 +202,7 @@ function GameScreen({
   const [isDragging, setIsDragging] = useState(false);
   const [trails, setTrails] = useState<TrailItem[]>([]);
   const [isPortrait, setIsPortrait] = useState(false);
+  const [isPhone, setIsPhone] = useState(false);
   const [heroOffsetBounds, setHeroOffsetBounds] = useState({ min: -280, max: 280 });
   const imageOffsetYRef = useRef(0);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -245,6 +246,14 @@ function GameScreen({
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
+  }, []);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 767px)');
+    setIsPhone(mq.matches);
+    const h = () => setIsPhone(mq.matches);
+    mq.addEventListener('change', h);
+    return () => mq.removeEventListener('change', h);
   }, []);
 
   useEffect(() => {
@@ -408,7 +417,7 @@ function GameScreen({
 
       <div
         ref={heroRef}
-        className="absolute left-4 top-1/2 z-[8] w-[72px] h-[72px] sm:w-[336px] sm:h-[336px] md:w-[384px] md:h-[384px] touch-none select-none box-border"
+        className="absolute left-4 top-1/2 z-[8] w-[72px] h-[72px] md:w-[336px] md:h-[336px] lg:w-[384px] lg:h-[384px] touch-none select-none box-border"
         style={{
           transform: `translateY(calc(-50% + ${imageOffsetY}px)) rotate(${tilt}deg)`,
           transition: isDragging ? 'none' : undefined,
@@ -424,7 +433,7 @@ function GameScreen({
           alt="Ali uch"
           fill
           className="object-contain drop-shadow-lg pointer-events-none"
-          sizes="(max-width: 640px) 72px, (max-width: 768px) 336px, 384px"
+          sizes="(max-width: 767px) 72px, (max-width: 1024px) 336px, 384px"
         />
       </div>
 
@@ -509,7 +518,7 @@ function GameScreen({
           heroRef={heroRef}
           score={score}
           onScoreChange={onScoreChange}
-          soundOn={soundOn}
+          soundOn={isPhone ? false : soundOn}
           onGameComplete={onGameComplete ?? (() => {})}
           onClose={onClose}
           onRestart={onRestart}
@@ -521,7 +530,7 @@ function GameScreen({
       <button
         type="button"
         onClick={onSoundToggle}
-        className="absolute bottom-6 right-6 z-10 w-14 h-14 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white border-2 border-gray-200 shadow-lg"
+        className="absolute bottom-6 right-6 z-10 w-14 h-14 rounded-full bg-white/90 hidden md:flex items-center justify-center text-gray-700 hover:bg-white border-2 border-gray-200 shadow-lg"
         aria-label={soundOn ? 'Ovozni o\'chirish' : 'Ovozni yoqish'}
         title={soundOn ? "Ovozni o'chirish" : "Ovozni yoqish"}
       >
