@@ -121,7 +121,7 @@ function LevelSelectScreen({
         aria-label="Orqaga"
       >
         <span className="text-xl leading-none">←</span>
-        <span className="font-semibold">Orqaga</span>
+        <span className="font-semibold max-md:hidden">Orqaga</span>
       </button>
       <h2 className="text-2xl font-bold text-gray-800 mb-2 mt-12">{title}</h2>
       <p className="text-gray-600 mb-6">Darajani tanlang</p>
@@ -237,7 +237,7 @@ function GameScreen({
       const h = window.innerHeight;
       const w = window.innerWidth;
       if (w < 768) {
-        const limit = Math.min(100, Math.floor(h * 0.22));
+        const limit = Math.max(0, Math.floor(h * 0.5 - 80));
         setHeroOffsetBounds({ min: -limit, max: limit });
       } else {
         setHeroOffsetBounds({ min: -280, max: 280 });
@@ -385,7 +385,7 @@ function GameScreen({
           aria-label="Orqaga"
         >
           <span className="text-xl leading-none">←</span>
-          <span className="font-semibold">Orqaga</span>
+          <span className="font-semibold max-md:hidden">Orqaga</span>
         </button>
       </motion.div>
     );
@@ -405,10 +405,10 @@ function GameScreen({
         aria-label="Orqaga"
       >
         <span className="text-xl leading-none">←</span>
-        <span className="font-semibold">Orqaga</span>
+        <span className="font-semibold max-md:hidden">Orqaga</span>
       </button>
 
-      <div className="absolute top-4 right-4 z-10 px-4 py-2 rounded-xl bg-white/90 border border-gray-200 shadow font-bold text-gray-800 flex flex-col gap-1 items-end">
+      <div className="absolute top-4 right-4 z-10 px-4 py-2 rounded-xl bg-white/90 border border-gray-200 shadow font-bold text-gray-800 flex flex-row flex-wrap gap-x-3 gap-y-0 items-center md:flex-col md:gap-1 md:items-end">
         {currentLevel != null && (
           <span className="text-gray-600 text-sm sm:text-base">Daraja: <span className="text-sky-600 tabular-nums">{currentLevel}</span></span>
         )}
@@ -417,7 +417,7 @@ function GameScreen({
 
       <div
         ref={heroRef}
-        className="absolute left-4 top-1/2 z-[8] w-[72px] h-[72px] md:w-[336px] md:h-[336px] lg:w-[384px] lg:h-[384px] touch-none select-none box-border"
+        className="absolute left-4 top-1/2 z-[8] w-[144px] h-[144px] md:w-[336px] md:h-[336px] lg:w-[384px] lg:h-[384px] touch-none select-none box-border"
         style={{
           transform: `translateY(calc(-50% + ${imageOffsetY}px)) rotate(${tilt}deg)`,
           transition: isDragging ? 'none' : undefined,
@@ -433,7 +433,7 @@ function GameScreen({
           alt="Ali uch"
           fill
           className="object-contain drop-shadow-lg pointer-events-none"
-          sizes="(max-width: 767px) 72px, (max-width: 1024px) 336px, 384px"
+          sizes="(max-width: 767px) 144px, (max-width: 1024px) 336px, 384px"
         />
       </div>
 
@@ -441,7 +441,7 @@ function GameScreen({
       <div className="absolute right-4 top-1/2 z-[9] flex flex-col gap-2 -translate-y-1/2 md:hidden select-none">
         <button
           type="button"
-          className="w-12 h-12 rounded-xl bg-white/90 shadow flex items-center justify-center text-gray-700 active:bg-sky-100 touch-none select-none"
+          className="w-24 h-24 rounded-full bg-white border-2 border-sky-200/80 shadow-lg shadow-sky-200/30 flex items-center justify-center text-sky-600 active:bg-sky-100 active:scale-95 active:shadow-md transition-transform touch-none select-none"
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
           aria-label="Yuqori"
           onPointerDown={(e) => { e.preventDefault(); upPressed.current = true; }}
@@ -449,13 +449,13 @@ function GameScreen({
           onPointerLeave={() => { upPressed.current = false; }}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <svg className="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-12 h-12 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
           </svg>
         </button>
         <button
           type="button"
-          className="w-12 h-12 rounded-xl bg-white/90 shadow flex items-center justify-center text-gray-700 active:bg-sky-100 touch-none select-none"
+          className="w-24 h-24 rounded-full bg-white border-2 border-sky-200/80 shadow-lg shadow-sky-200/30 flex items-center justify-center text-sky-600 active:bg-sky-100 active:scale-95 active:shadow-md transition-transform touch-none select-none"
           style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
           aria-label="Pastga"
           onPointerDown={(e) => { e.preventDefault(); downPressed.current = true; }}
@@ -463,7 +463,7 @@ function GameScreen({
           onPointerLeave={() => { downPressed.current = false; }}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <svg className="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-12 h-12 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
@@ -1081,6 +1081,7 @@ export default function HisoblaCoursePage({
         )}
       </AnimatePresence>
 
+      {!selectedOperation && (
     <main
       className="min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: 'url(/courses/hisobla/fon_main.png)' }}
@@ -1092,7 +1093,7 @@ export default function HisoblaCoursePage({
           aria-label="Orqaga"
         >
           <span className="text-xl leading-none">←</span>
-          <span className="font-semibold">Orqaga</span>
+          <span className="font-semibold max-md:hidden">Orqaga</span>
         </Link>
         <h1 className="text-lg font-bold text-gray-800 truncate">
           {course.titleUz ?? course.title}
@@ -1125,6 +1126,7 @@ export default function HisoblaCoursePage({
         </div>
       </div>
     </main>
+      )}
     </>
   );
 }
