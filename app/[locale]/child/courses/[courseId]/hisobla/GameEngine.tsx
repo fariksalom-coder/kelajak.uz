@@ -179,8 +179,10 @@ export function GameEngine({
       const level = isAdditionLevel
         ? Math.floor(currentTaskIndexRef.current / TASKS_PER_LEVEL) + 1
         : currentRoundRef.current;
-      const speed = CARD_SPEED_PX_S * Math.pow(1.15, level - 1);
-
+      let speed = CARD_SPEED_PX_S * Math.pow(1.15, level - 1);
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        speed *= 0.55;
+      }
       if (isTaskMovingRef.current) {
         const nextX = taskPositionXRef.current - speed * dt;
         taskPositionXRef.current = nextX;

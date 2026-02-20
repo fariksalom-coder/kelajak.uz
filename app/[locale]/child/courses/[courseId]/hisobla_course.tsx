@@ -212,9 +212,12 @@ function GameScreen({
   const lastTrailSpawnRef = useRef(0);
   const rafIdRef = useRef<number>(0);
   const trailsCountRef = useRef(0);
+  const heroOffsetBoundsRef = useRef(heroOffsetBounds);
   trailsCountRef.current = trails.length;
+  heroOffsetBoundsRef.current = heroOffsetBounds;
 
   const [isPortrait, setIsPortrait] = useState(false);
+  const [heroOffsetBounds, setHeroOffsetBounds] = useState({ min: -280, max: 280 });
   useEffect(() => {
     const check = () => setIsPortrait(window.innerHeight > window.innerWidth);
     check();
@@ -227,6 +230,22 @@ function GameScreen({
       window.removeEventListener('resize', check);
       window.removeEventListener('orientationchange', check);
     };
+  }, []);
+  useEffect(() => {
+    const update = () => {
+      if (typeof window === 'undefined') return;
+      const h = window.innerHeight;
+      const w = window.innerWidth;
+      if (w < 768) {
+        const limit = Math.min(100, Math.floor(h * 0.22));
+        setHeroOffsetBounds({ min: -limit, max: limit });
+      } else {
+        setHeroOffsetBounds({ min: -280, max: 280 });
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, []);
 
   useEffect(() => {
@@ -249,8 +268,9 @@ function GameScreen({
       if (Math.abs(v) < 0.5) v = 0;
       velocityRef.current = v;
 
+      const { min: boundMin, max: boundMax } = heroOffsetBoundsRef.current;
       let pos = imageOffsetYRef.current + v * dt;
-      pos = Math.max(IMAGE_OFFSET_MIN, Math.min(IMAGE_OFFSET_MAX, pos));
+      pos = Math.max(boundMin, Math.min(boundMax, pos));
       imageOffsetYRef.current = pos;
       setImageOffsetY(pos);
 
@@ -318,10 +338,8 @@ function GameScreen({
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (touchStartY.current === null) return;
     const deltaY = e.touches[0].clientY - touchStartY.current;
-    const next = Math.max(
-      IMAGE_OFFSET_MIN,
-      Math.min(IMAGE_OFFSET_MAX, touchStartOffset.current + deltaY)
-    );
+    const { min: boundMin, max: boundMax } = heroOffsetBoundsRef.current;
+    const next = Math.max(boundMin, Math.min(boundMax, touchStartOffset.current + deltaY));
     setImageOffsetY(next);
   }, []);
 
@@ -391,7 +409,7 @@ function GameScreen({
 
       <div
         ref={heroRef}
-        className="absolute left-4 top-1/2 z-[8] w-[86px] h-[86px] sm:w-[336px] sm:h-[336px] md:w-[384px] md:h-[384px] touch-none select-none box-border"
+        className="absolute left-4 top-1/2 z-[8] w-[72px] h-[72px] sm:w-[336px] sm:h-[336px] md:w-[384px] md:h-[384px] touch-none select-none box-border"
         style={{
           transform: `translateY(calc(-50% + ${imageOffsetY}px)) rotate(${tilt}deg)`,
           transition: isDragging ? 'none' : undefined,
@@ -407,7 +425,7 @@ function GameScreen({
           alt="Ali uch"
           fill
           className="object-contain drop-shadow-lg pointer-events-none"
-          sizes="(max-width: 640px) 86px, (max-width: 768px) 336px, 384px"
+          sizes="(max-width: 640px) 72px, (max-width: 768px) 336px, 384px"
         />
       </div>
 
