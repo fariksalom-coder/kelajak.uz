@@ -411,31 +411,33 @@ function GameScreen({
         />
       </div>
 
-      {/* Кнопки вверх/вниз только в телефонном режиме */}
-      <div className="absolute left-2 top-1/2 z-[9] flex flex-col gap-2 -translate-y-1/2 md:hidden">
+      {/* Кнопки вверх/вниз только в телефонном режиме — справа, без выделения текста */}
+      <div className="absolute right-4 top-1/2 z-[9] flex flex-col gap-2 -translate-y-1/2 md:hidden select-none">
         <button
           type="button"
-          className="w-12 h-12 rounded-xl bg-white/90 shadow flex items-center justify-center text-gray-700 active:bg-sky-100 touch-none"
+          className="w-12 h-12 rounded-xl bg-white/90 shadow flex items-center justify-center text-gray-700 active:bg-sky-100 touch-none select-none"
+          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
           aria-label="Yuqori"
           onPointerDown={(e) => { e.preventDefault(); upPressed.current = true; }}
           onPointerUp={() => { upPressed.current = false; }}
           onPointerLeave={() => { upPressed.current = false; }}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
           </svg>
         </button>
         <button
           type="button"
-          className="w-12 h-12 rounded-xl bg-white/90 shadow flex items-center justify-center text-gray-700 active:bg-sky-100 touch-none"
+          className="w-12 h-12 rounded-xl bg-white/90 shadow flex items-center justify-center text-gray-700 active:bg-sky-100 touch-none select-none"
+          style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
           aria-label="Pastga"
           onPointerDown={(e) => { e.preventDefault(); downPressed.current = true; }}
           onPointerUp={() => { downPressed.current = false; }}
           onPointerLeave={() => { downPressed.current = false; }}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+          <svg className="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>

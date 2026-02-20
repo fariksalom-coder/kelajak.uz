@@ -182,12 +182,7 @@ export function GameEngine({
       const speed = CARD_SPEED_PX_S * Math.pow(1.15, level - 1);
 
       if (isTaskMovingRef.current) {
-        let nextX = taskPositionXRef.current - speed * dt;
-        // На узких экранах не уводим блок за левый край, пока не ответили — чтобы варианты были видны
-        if (!collidedRef.current && typeof window !== 'undefined' && window.innerWidth < 768) {
-          const minVisible = 12;
-          nextX = Math.max(minVisible, nextX);
-        }
+        const nextX = taskPositionXRef.current - speed * dt;
         taskPositionXRef.current = nextX;
         setTaskPositionX(nextX);
       }
