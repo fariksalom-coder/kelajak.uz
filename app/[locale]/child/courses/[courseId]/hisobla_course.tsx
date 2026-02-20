@@ -117,10 +117,11 @@ function LevelSelectScreen({
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white border border-gray-200 shadow"
+        className="absolute top-4 left-4 z-10 flex items-center justify-center gap-2 px-1 py-2 text-gray-700 hover:text-gray-900"
         aria-label="Orqaga"
       >
         <span className="text-xl leading-none">←</span>
+        <span className="font-semibold">Orqaga</span>
       </button>
       <h2 className="text-2xl font-bold text-gray-800 mb-2 mt-12">{title}</h2>
       <p className="text-gray-600 mb-6">Darajani tanlang</p>
@@ -354,10 +355,11 @@ function GameScreen({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white border border-gray-200 shadow"
+          className="absolute top-4 left-4 z-10 flex items-center justify-center gap-2 px-1 py-2 text-gray-700 hover:text-gray-900"
           aria-label="Orqaga"
         >
           <span className="text-xl leading-none">←</span>
+          <span className="font-semibold">Orqaga</span>
         </button>
       </motion.div>
     );
@@ -368,27 +370,28 @@ function GameScreen({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center p-3 md:p-4 bg-gradient-to-b from-sky-300 via-sky-200 to-blue-100 overflow-hidden"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-gradient-to-b from-sky-300 via-sky-200 to-blue-100"
     >
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white border border-gray-200 shadow"
+        className="absolute top-4 left-4 z-10 flex items-center justify-center gap-2 px-1 py-2 text-gray-700 hover:text-gray-900"
         aria-label="Orqaga"
       >
         <span className="text-xl leading-none">←</span>
+        <span className="font-semibold">Orqaga</span>
       </button>
 
-      <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10 px-3 py-1.5 md:px-4 md:py-2 rounded-xl bg-white/90 border border-gray-200 shadow font-bold text-gray-800 flex flex-col gap-0.5 md:gap-1 items-end text-sm md:text-base">
+      <div className="absolute top-4 right-4 z-10 px-4 py-2 rounded-xl bg-white/90 border border-gray-200 shadow font-bold text-gray-800 flex flex-col gap-1 items-end">
         {currentLevel != null && (
-          <span className="text-gray-600">Daraja: <span className="text-sky-600 tabular-nums">{currentLevel}</span></span>
+          <span className="text-gray-600 text-sm sm:text-base">Daraja: <span className="text-sky-600 tabular-nums">{currentLevel}</span></span>
         )}
         <span>Ball: <span className="text-sky-600 tabular-nums">{score}</span></span>
       </div>
 
       <div
         ref={heroRef}
-        className="absolute left-2 top-1/2 z-[8] w-[288px] h-[288px] sm:w-[320px] sm:h-[320px] md:w-[280px] md:h-[280px] md:left-4 touch-none select-none box-border"
+        className="absolute left-4 top-1/2 z-[8] w-[288px] h-[288px] sm:w-[336px] sm:h-[336px] md:w-[384px] md:h-[384px] touch-none select-none box-border"
         style={{
           transform: `translateY(calc(-50% + ${imageOffsetY}px)) rotate(${tilt}deg)`,
           transition: isDragging ? 'none' : undefined,
@@ -404,7 +407,7 @@ function GameScreen({
           alt="Ali uch"
           fill
           className="object-contain drop-shadow-lg pointer-events-none"
-          sizes="(max-width: 640px) 288px, (max-width: 768px) 320px, 280px"
+          sizes="(max-width: 640px) 288px, (max-width: 768px) 336px, 384px"
         />
       </div>
 
@@ -469,7 +472,7 @@ function GameScreen({
       <button
         type="button"
         onClick={onSoundToggle}
-        className="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-10 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white border-2 border-gray-200 shadow-lg"
+        className="absolute bottom-6 right-6 z-10 w-14 h-14 rounded-full bg-white/90 flex items-center justify-center text-gray-700 hover:bg-white border-2 border-gray-200 shadow-lg"
         aria-label={soundOn ? 'Ovozni o\'chirish' : 'Ovozni yoqish'}
         title={soundOn ? "Ovozni o'chirish" : "Ovozni yoqish"}
       >
@@ -1027,10 +1030,11 @@ export default function HisoblaCoursePage({
       <header className="flex items-center gap-3 p-4">
         <Link
           href={backUrl}
-          className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-700 hover:bg-gray-100 border border-gray-200 shrink-0 shadow-sm"
+          className="flex items-center justify-center gap-2 px-1 py-2 text-gray-700 hover:text-gray-900 shrink-0"
           aria-label="Orqaga"
         >
           <span className="text-xl leading-none">←</span>
+          <span className="font-semibold">Orqaga</span>
         </Link>
         <h1 className="text-lg font-bold text-gray-800 truncate">
           {course.titleUz ?? course.title}

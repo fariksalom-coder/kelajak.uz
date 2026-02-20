@@ -8,7 +8,7 @@ const CARD_CLASS =
 export function QuestionCard({ question }: { question: string }) {
   return (
     <div
-      className={`${CARD_CLASS} min-w-[140px] min-h-[80px] md:min-w-[100px] md:min-h-[60px] px-6 py-4 md:px-3 md:py-2 text-[6rem] md:text-[2.75rem] leading-tight`}
+      className={`${CARD_CLASS} min-w-[140px] min-h-[80px] px-6 py-4 text-[6rem] leading-tight`}
       data-card="question"
     >
       {question}
@@ -34,7 +34,7 @@ export function OptionCard({
       ref={refCallback}
       data-value={value}
       data-correct={isCorrect}
-      className={`${CARD_CLASS} min-w-[100px] min-h-[72px] md:min-w-[72px] md:min-h-[52px] px-5 py-3 md:px-3 md:py-1.5 text-[4rem] md:text-[2.25rem] leading-tight transition-all duration-300 ${
+      className={`${CARD_CLASS} min-w-[100px] min-h-[72px] px-5 py-3 text-[4rem] leading-tight transition-all duration-300 ${
         flashWrong ? 'bg-red-200 border-red-400' : ''
       } ${highlightCorrect ? '!bg-green-500 !border-green-600 text-white scale-[1.05]' : ''}`}
     >
@@ -60,14 +60,15 @@ export function AnswerOptions({
 }: AnswerOptionsProps) {
   return (
     <div
-      className="fixed left-0 top-1/2 z-[6] flex items-center pointer-events-none gap-[calc(1.5rem+8cm)] md:gap-4"
+      className="fixed left-0 top-1/2 z-[6] flex items-center pointer-events-none"
       style={{
         transform: `translateY(-50%) translateX(${cardOffsetX}px)`,
         willChange: 'transform',
+        gap: 'calc(1.5rem + 8cm)',
       }}
     >
       <QuestionCard question={task.question} />
-      <div className="flex flex-col gap-[calc(3rem+3cm)] md:gap-2">
+      <div className="flex flex-col" style={{ gap: 'calc(3rem + 3cm)' }}>
         {task.options.map((value, i) => (
           <OptionCard
             key={`${task.question}-${i}-${value}`}
