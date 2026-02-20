@@ -72,14 +72,14 @@ export function AnswerOptions({
 }: AnswerOptionsProps) {
   return (
     <div
-      className="fixed left-0 top-1/2 z-[6] flex items-center pointer-events-none gap-[clamp(0.5rem,3vw,2rem)] md:gap-[calc(1.5rem+4cm)] lg:gap-[calc(1.5rem+8cm)]"
+      className="fixed left-0 top-1/2 z-[6] flex items-center pointer-events-none gap-[calc(clamp(0.5rem,3vw,2rem)+5cm)] md:gap-[calc(1.5rem+4cm)] lg:gap-[calc(1.5rem+8cm)]"
       style={{
         transform: `translateY(-50%) translateX(${cardOffsetX}px)`,
         willChange: 'transform',
       }}
     >
       <QuestionCard question={task.question} />
-      <div className="flex flex-col gap-[clamp(0.375rem,2vw,1.5rem)] md:gap-[calc(3rem+3cm)]">
+      <div className="flex flex-col gap-[calc(clamp(0.375rem,2vw,1.5rem)+2cm)] md:gap-[calc(3rem+3cm)] max-md:scale-50 max-md:origin-left">
         {task.options.map((value, i) => (
           <OptionCard
             key={`${task.question}-${i}-${value}`}

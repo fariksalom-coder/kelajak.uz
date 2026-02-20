@@ -391,7 +391,7 @@ function GameScreen({
 
       <div
         ref={heroRef}
-        className="absolute left-4 top-1/2 z-[8] w-[288px] h-[288px] sm:w-[336px] sm:h-[336px] md:w-[384px] md:h-[384px] touch-none select-none box-border"
+        className="absolute left-4 top-1/2 z-[8] w-[144px] h-[144px] sm:w-[336px] sm:h-[336px] md:w-[384px] md:h-[384px] touch-none select-none box-border"
         style={{
           transform: `translateY(calc(-50% + ${imageOffsetY}px)) rotate(${tilt}deg)`,
           transition: isDragging ? 'none' : undefined,
@@ -407,7 +407,7 @@ function GameScreen({
           alt="Ali uch"
           fill
           className="object-contain drop-shadow-lg pointer-events-none"
-          sizes="(max-width: 640px) 288px, (max-width: 768px) 336px, 384px"
+          sizes="(max-width: 640px) 144px, (max-width: 768px) 336px, 384px"
         />
       </div>
 
