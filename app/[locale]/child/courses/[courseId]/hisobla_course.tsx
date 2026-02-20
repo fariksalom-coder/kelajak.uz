@@ -408,7 +408,7 @@ function GameScreen({
         <span className="font-semibold max-md:hidden">Orqaga</span>
       </button>
 
-      <div className="absolute top-4 right-4 z-10 px-4 py-2 rounded-xl bg-white/90 border border-gray-200 shadow font-bold text-gray-800 flex flex-row flex-wrap gap-x-3 gap-y-0 items-center md:flex-col md:gap-1 md:items-end">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 z-10 px-4 py-2 rounded-xl bg-white/90 border border-gray-200 shadow font-bold text-gray-800 flex flex-row flex-wrap gap-x-3 gap-y-0 items-center justify-center md:flex-col md:gap-1 md:items-end md:justify-start">
         {currentLevel != null && (
           <span className="text-gray-600 text-sm sm:text-base">Daraja: <span className="text-sky-600 tabular-nums">{currentLevel}</span></span>
         )}
