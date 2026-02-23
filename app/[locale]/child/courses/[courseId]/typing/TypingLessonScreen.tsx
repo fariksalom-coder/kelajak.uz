@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useChildId } from '@/contexts/ChildIdContext';
@@ -3102,9 +3103,11 @@ function HandWithCircles({ imageSrc, imageAlt, numbers, activeIndices = [], clas
       className={`relative ${className}`}
       style={{ width: '13.65rem' }}
     >
-      <img
+      <Image
         src={imageSrc}
         alt={imageAlt}
+        width={219}
+        height={350}
         className="h-auto w-full object-contain pointer-events-none select-none"
         style={{ width: '13.65rem', position: 'relative', zIndex: 20 }}
       />
@@ -3177,24 +3180,6 @@ export default function TypingLessonScreen({ lesson }: TypingLessonScreenProps) 
   const nextLessonSlug = getNextTypingLessonSlug(lesson.slug);
   const prevLessonSlug = getPrevTypingLessonSlug(lesson.slug);
 
-  if (isMobile) {
-    return (
-      <main className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-b from-sky-50 to-white">
-        <div className="max-w-md rounded-2xl bg-white border-2 border-sky-200 shadow-lg p-6 text-center">
-          <p className="text-lg text-gray-800 font-medium leading-relaxed">
-            Ushbu kursda o&apos;qish uchun kompyuterdan oching. TezYoz kursi barmoqlar bilan yozishni o&apos;rganish uchun klaviatura kerak.
-          </p>
-          <Link
-            href={courseUrl}
-            className="mt-6 inline-block px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium"
-          >
-            Orqaga
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
   const handleStartExercise = useCallback(() => {
     setStep('exercise');
     setTyped('');
@@ -3230,12 +3215,12 @@ export default function TypingLessonScreen({ lesson }: TypingLessonScreenProps) 
     }
   }, [exerciseIndex, exercises.length]);
 
-  const handleNextLesson = () => {
+  const handleNextLesson = useCallback(() => {
     markLessonCompleted(lesson.slug);
     if (nextLessonSlug) {
       window.location.href = `/${locale}/child/courses/${courseId}/lesson/${nextLessonSlug}${linkSuffix}`;
     }
-  };
+  }, [lesson.slug, nextLessonSlug, locale, courseId, linkSuffix]);
 
   useEffect(() => {
     if (childId && step === 'result' && lesson.slug) {
@@ -3249,6 +3234,24 @@ export default function TypingLessonScreen({ lesson }: TypingLessonScreenProps) 
 
   const isVideoOnlyLesson = lesson.exercises.length === 0;
   const hasVideo = lesson.videoUrl && lesson.videoUrl.trim() !== '';
+
+  if (isMobile) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center px-4 py-8 bg-gradient-to-b from-sky-50 to-white">
+        <div className="max-w-md rounded-2xl bg-white border-2 border-sky-200 shadow-lg p-6 text-center">
+          <p className="text-lg text-gray-800 font-medium leading-relaxed">
+            Ushbu kursda o&apos;qish uchun kompyuterdan oching. TezYoz kursi barmoqlar bilan yozishni o&apos;rganish uchun klaviatura kerak.
+          </p>
+          <Link
+            href={courseUrl}
+            className="mt-6 inline-block px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium"
+          >
+            Orqaga
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   if (isVideoOnlyLesson) {
     const handleVideoLessonNext = () => {
