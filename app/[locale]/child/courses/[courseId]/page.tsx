@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useChildId } from '@/contexts/ChildIdContext';
@@ -8,7 +9,24 @@ import { useLocale } from 'next-intl';
 import Math1Grade from './math_1grade';
 import RussianCoursePage from './russian_course';
 import FinanceCoursePage from './finance_course';
-import HisoblaCoursePage from './hisobla_course';
+
+const HisoblaCoursePage = dynamic(() => import('./hisobla_course'), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-12 h-12 rounded-full border-4 border-sky-500 border-t-transparent animate-spin" aria-hidden />
+    </div>
+  ),
+});
+
+const TypingCoursePage = dynamic(() => import('./typing_course'), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-12 h-12 rounded-full border-4 border-sky-500 border-t-transparent animate-spin" aria-hidden />
+    </div>
+  ),
+});
 
 type CourseItem = {
   id: string;
@@ -55,6 +73,8 @@ export default function CourseDetailPage() {
 
   const rawName = (course.titleUz ?? course.title) ?? '';
   const courseName = rawName.toLowerCase().replace(/[\u2018\u2019\u0027\u0060]/g, "'");
+  const titleEn = (course.title ?? '').toLowerCase();
+  const titleUz = (course.titleUz ?? '').toLowerCase();
   const isMatematika =
     courseName.includes('matematika') || courseName.includes('математика');
   const isRusTili =
@@ -69,6 +89,19 @@ export default function CourseDetailPage() {
   const isMoliyaviy = financeCourse != null && course.id === financeCourse.id;
   const isHisobla =
     courseName.includes('hisobla') && courseName.includes('uch');
+  const isTyping =
+    titleEn.includes('tezyoz') ||
+    titleUz.includes('tezyoz') ||
+    courseName.includes('tezyoz') ||
+    titleEn.includes('touch typing') ||
+    titleEn.includes('blind typing') ||
+    titleEn.includes('typing') ||
+    titleUz.includes('barmoq') ||
+    titleUz.includes('yozish') ||
+    courseName.includes('touch typing') ||
+    courseName.includes('typing') ||
+    courseName.includes('barmoq') ||
+    (courseName.includes('yozish') && courseName.includes('klaviatura'));
 
   if (isMatematika) {
     return <Math1Grade />;
@@ -97,6 +130,16 @@ export default function CourseDetailPage() {
   if (isHisobla) {
     return (
       <HisoblaCoursePage
+        course={course}
+        locale={locale}
+        linkSuffix={linkSuffix}
+      />
+    );
+  }
+
+  if (isTyping) {
+    return (
+      <TypingCoursePage
         course={course}
         locale={locale}
         linkSuffix={linkSuffix}

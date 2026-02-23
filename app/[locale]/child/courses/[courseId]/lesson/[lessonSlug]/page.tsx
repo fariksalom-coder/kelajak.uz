@@ -10,10 +10,24 @@ import CharacterAvatar from '@/components/lesson/CharacterAvatar';
 import Cube from '@/components/lesson/Cube';
 import SpeakerButton from '@/components/lesson/SpeakerButton';
 import { useChildId } from '@/contexts/ChildIdContext';
+import { getTypingLessonBySlug } from '../../typing-data/lessons';
 
 const ReadingRussian1 = dynamic(
   () => import('./reading_russian_1/reading_russian_1'),
   { ssr: false }
+);
+
+const TypingLessonScreen = dynamic(
+  () => import('../../typing/TypingLessonScreen'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center gap-4 bg-gray-100">
+        <div className="w-14 h-14 rounded-full border-4 border-sky-500 border-t-transparent animate-spin" aria-hidden />
+        <p className="text-gray-600 text-sm">Yuklanmoqda...</p>
+      </div>
+    ),
+  }
 );
 
 const TEXTS = {
@@ -428,6 +442,11 @@ setScreen('explanation');
 
   if (lessonSlug === 'reading-russian-1') {
     return <ReadingRussian1 />;
+  }
+
+  const typingLesson = getTypingLessonBySlug(lessonSlug);
+  if (typingLesson) {
+    return <TypingLessonScreen lesson={typingLesson} />;
   }
 
   if (lessonSlug !== '1-2-3-kirish') {
